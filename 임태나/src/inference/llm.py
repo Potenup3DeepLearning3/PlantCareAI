@@ -415,24 +415,16 @@ def generate_care_guide_from_db(
     disease_name: str,
     lesion_ratio: float,
     nickname: str,
+    clip_description: str = "",
 ) -> str:
     """DB에서 검증된 정보 조회 → LLM은 톤 변환만.
 
     LLM이 정보를 창작하지 않음. 정확도는 DB가, 감성은 LLM이.
+    clip_description이 있으면 추가 컨텍스트로 활용 (저신뢰 케이스).
     """
     from src.mcp_client import plant_db
 
     disease_info = plant_db.get_disease_info(disease_name)
-    if "error" in disease_info:
-        # DB에 없으면 기존 방식 폴백
-        return generate_care_guide(
-            species_name=nickname,
-            disease_korean_name=disease_name,
-            confidence=0.8,
-            lesion_ratio=lesion_ratio,
-            severity="중기" if lesion_ratio > 0.1 else "초기",
-            plant_nickname=nickname,
-        )
 
     if lesion_ratio <= 0.10:
         severity = "초기"
@@ -440,6 +432,33 @@ def generate_care_guide_from_db(
         severity = "중기"
     else:
         severity = "후기"
+
+    if "error" in disease_info:
+        # DB에 없고 CLIP 설명이 있으면 CLIP 기반 안내
+        if clip_description:
+            prompt = f"""{BOONZ_PERSONA}
+
+[CLIP 이미지 분석 결과]
+{clip_description}
+
+EfficientNet이 확실하게 분류하지 못한 케이스야.
+CLIP 분석 결과를 바탕으로 {nickname}한테 조언해줘.
+확실하지 않은 부분은 "정확하진 않은데"라고 전제하고 답해.
+3~5문장. {nickname}의 시점에서 분즈 톤으로."""
+            result = _call_llm(prompt)
+            return result if result else FALLBACK_GUIDE
+
+        # DB에도 없고 CLIP도 없으면 기존 방식 폴백
+        return generate_care_guide(
+            species_name=nickname,
+            disease_korean_name=disease_name,
+            confidence=0.8,
+            lesion_ratio=lesion_ratio,
+            severity=severity,
+            plant_nickname=nickname,
+        )
+
+    clip_section = f"\n[CLIP 추가 분석] {clip_description}" if clip_description else ""
 
     prompt = f"""{BOONZ_PERSONA}
 
@@ -451,7 +470,7 @@ def generate_care_guide_from_db(
 예방법: {disease_info['prevention']}
 회복 기간: {disease_info['recovery_days']}
 현재 상태: {severity} (병변 {lesion_ratio*100:.1f}%)
-심각도 안내: {disease_info['severity_levels']}
+심각도 안내: {disease_info['severity_levels']}{clip_section}
 
 위 정보를 {nickname}의 시점에서, 분즈 톤으로 전달해줘.
 - 전문 용어는 쉽게 바꿔

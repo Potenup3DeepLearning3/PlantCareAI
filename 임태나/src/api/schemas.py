@@ -36,6 +36,11 @@ class CareGuideResponse(BaseModel):
     audio_url: str = ""
 
 
+class ClipResponse(BaseModel):
+    used: bool = False
+    description: str = ""
+
+
 class DiagnoseResponse(BaseModel):
     species: SpeciesResponse
     disease: DiseaseResponse
@@ -45,6 +50,7 @@ class DiagnoseResponse(BaseModel):
     care_guide: CareGuideResponse
     boonz: BoonzResponse = BoonzResponse()
     processing_time_ms: float = 0
+    clip: ClipResponse = ClipResponse()
 
 
 # ── 약제 ─────────────────────────────────────────────────────────

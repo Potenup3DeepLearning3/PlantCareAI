@@ -47,12 +47,13 @@ async def care_guide(request: dict = Body(...)):
 
     Body: {"nickname": str, "disease": str, "lesion_ratio": float}
     """
-    nickname    = request.get("nickname", "식물")
-    disease     = request.get("disease", "")
-    lesion_ratio = float(request.get("lesion_ratio", 0))
+    nickname         = request.get("nickname", "식물")
+    disease          = request.get("disease", "")
+    lesion_ratio     = float(request.get("lesion_ratio", 0))
+    clip_description = request.get("clip_description", "")
 
     from src.inference.llm import generate_care_guide_from_db
-    guide = generate_care_guide_from_db(disease, lesion_ratio, nickname)
+    guide = generate_care_guide_from_db(disease, lesion_ratio, nickname, clip_description)
 
     return {
         "care_guide": {"text": guide, "source": "db"},
