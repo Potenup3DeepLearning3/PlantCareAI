@@ -1,0 +1,192 @@
+[
+  {
+    "model": "best_model.pth (PlantVillage 사전학습)",
+    "dataset": "disease_type test split",
+    "num_samples": 2836,
+    "accuracy": 0.9989,
+    "f1_weighted": 0.9993,
+    "per_class": {
+      "Blight_Spot": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0.0
+      },
+      "Greening": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 441.0
+      },
+      "Healthy": {
+        "precision": 1.0,
+        "recall": 0.9983,
+        "f1": 0.9992,
+        "support": 1207.0
+      },
+      "Leaf_Curl": {
+        "precision": 1.0,
+        "recall": 0.9977,
+        "f1": 0.9988,
+        "support": 428.0
+      },
+      "Leaf_Mold": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 76.0
+      },
+      "Mosaic_Virus": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 30.0
+      },
+      "Powdery_Mildew": {
+        "precision": 0.9957,
+        "recall": 1.0,
+        "f1": 0.9978,
+        "support": 231.0
+      },
+      "Rust": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 117.0
+      },
+      "Scab_Rot": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 306.0
+      }
+    }
+  },
+  {
+    "model": "best_model_finetuned.pth (스크래핑 파인튜닝)",
+    "dataset": "houseplant_disease_scraped test split",
+    "num_samples": 52,
+    "accuracy": 0.5,
+    "f1_weighted": 0.4948,
+    "per_class": {
+      "dehydration": {
+        "precision": 0.3333,
+        "recall": 0.2857,
+        "f1": 0.3077,
+        "support": 7.0
+      },
+      "nutrient_deficiency": {
+        "precision": 0.4286,
+        "recall": 0.4286,
+        "f1": 0.4286,
+        "support": 7.0
+      },
+      "overwatering": {
+        "precision": 0.4,
+        "recall": 0.5714,
+        "f1": 0.4706,
+        "support": 7.0
+      },
+      "powdery_mildew": {
+        "precision": 0.5,
+        "recall": 0.4286,
+        "f1": 0.4615,
+        "support": 7.0
+      },
+      "root_rot": {
+        "precision": 0.5,
+        "recall": 0.4286,
+        "f1": 0.4615,
+        "support": 7.0
+      },
+      "rust": {
+        "precision": 0.8333,
+        "recall": 0.8333,
+        "f1": 0.8333,
+        "support": 6.0
+      },
+      "stress": {
+        "precision": 0.6667,
+        "recall": 0.8,
+        "f1": 0.7273,
+        "support": 5.0
+      },
+      "sunburn": {
+        "precision": 0.4,
+        "recall": 0.3333,
+        "f1": 0.3636,
+        "support": 6.0
+      }
+    }
+  },
+  {
+    "model": "species_model.pth",
+    "dataset": "house_plant_species test split",
+    "num_samples": 1478,
+    "accuracy": 0.9046,
+    "f1_weighted": 0.904
+  },
+  {
+    "model": "best_model (PlantDoc 크로스 평가, TTA)",
+    "dataset": "PlantDoc (test)",
+    "num_samples": 238,
+    "accuracy": 0.5924,
+    "f1_weighted": 0.5571,
+    "per_class": {
+      "Blight_Spot": {
+        "precision": 0.5075,
+        "recall": 0.85,
+        "f1": 0.6355,
+        "support": 80.0
+      },
+      "Greening": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 0.0
+      },
+      "Healthy": {
+        "precision": 0.8077,
+        "recall": 0.6848,
+        "f1": 0.7412,
+        "support": 92.0
+      },
+      "Leaf_Curl": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 6.0
+      },
+      "Leaf_Mold": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 6.0
+      },
+      "Mosaic_Virus": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 10.0
+      },
+      "Powdery_Mildew": {
+        "precision": 1.0,
+        "recall": 0.3333,
+        "f1": 0.5,
+        "support": 6.0
+      },
+      "Rust": {
+        "precision": 0.3846,
+        "recall": 0.25,
+        "f1": 0.303,
+        "support": 20.0
+      },
+      "Scab_Rot": {
+        "precision": 0.5,
+        "recall": 0.1667,
+        "f1": 0.25,
+        "support": 18.0
+      }
+    }
+  }
+]

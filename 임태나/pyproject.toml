@@ -1,0 +1,48 @@
+[project]
+name = "plantcare-ai"
+version = "0.1.0"
+description = "반려식물 및 조경 수목 AI 건강 진단 + 맞춤 케어 시스템"
+requires-python = ">=3.12"
+dependencies = [
+    "torch",
+    "torchvision",
+    "opencv-python",
+    "pillow",
+    "matplotlib",
+    "plotly",
+    "scikit-learn",
+    "datasets",
+    "kaggle",
+    "numpy",
+    "pandas",
+    "tqdm",
+    "python-dotenv",
+    "loguru",
+    "requests",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+inference = [
+    "fastapi",
+    "uvicorn",
+    "streamlit",
+    "segment-anything",
+    "easyocr",
+    "openai-whisper",
+    "gtts",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.backends"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
