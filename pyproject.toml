@@ -33,6 +33,10 @@ dependencies = [
     "mediapipe>=0.10.32",
     "tqdm>=4.67.3",
     "kagglehub>=1.0.0",
+    "python-dotenv>=1.2.2",
+    "datasets>=4.8.4",
+    "env>=0.1.0",
+    "dataset>=1.6.2",
 ]
 
 [tool.uv.sources]

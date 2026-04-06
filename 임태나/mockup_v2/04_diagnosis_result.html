@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a1a;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Noto Sans KR',system-ui,sans-serif}
+.ph{width:360px;background:#2C2C2A;border-radius:40px;padding:12px;box-shadow:0 12px 48px rgba(0,0,0,0.4)}
+.in{background:#F7F5F0;border-radius:30px;overflow:hidden;min-height:740px;position:relative;padding-bottom:56px}
+.notch{width:110px;height:8px;background:#2C2C2A;border-radius:4px;margin:10px auto 16px}
+.p{padding:18px 22px}
+.av{width:38px;height:38px;background:#EAF3DE;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.bb{background:#fff;border:0.5px solid #E5E0D5;border-radius:14px 14px 14px 4px;padding:11px 15px;font-size:13.5px;color:#2C2C2A;flex:1;margin-left:10px;line-height:1.6}
+.bn{font-size:10px;color:#3B6D11;font-weight:600;margin-bottom:3px}
+.ch{display:flex;align-items:flex-start;margin:10px 0}
+.img-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.img-ph{background:#E5E0D5;border-radius:14px;height:110px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#888780}
+.img-sam{border:2px solid #97C459}
+.rc{background:#fff;border-radius:20px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin:10px 0}
+.rt{font-size:17px;font-weight:700;color:#2C2C2A}
+.rs{font-size:13px;color:#888780;margin:4px 0}
+.pb{background:#E5E0D5;border-radius:6px;height:8px;margin:8px 0;overflow:hidden}
+.pf{height:100%;border-radius:6px}
+.rv{font-size:12px;color:#3B6D11}
+.guide{background:#fff;border-radius:16px;padding:16px;border-left:3px solid #3B6D11;margin:10px 0;font-size:13px;color:#2C2C2A;line-height:1.7}
+.gf{font-size:11px;color:#888780;margin-top:8px;font-style:italic}
+.gbtn{background:#3B6D11;color:#fff;border:none;border-radius:20px;padding:12px;font-size:13px;width:100%;text-align:center;margin:8px 0;cursor:pointer}
+.divider{border:none;border-top:0.5px solid #E5E0D5;margin:14px 0}
+.sec{font-size:14px;font-weight:600;color:#2C2C2A;margin:4px 0 10px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.btn{border-radius:16px;background:white;border:1px solid #E5E0D5;padding:10px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer}
+.btn .em{font-size:26px}.btn .lb{font-size:9px;color:#888780;margin-top:4px}
+.nav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:0.5px solid #E5E0D5;display:flex;justify-content:space-around;padding:12px 0 10px;font-size:10px}
+.ni{text-align:center;color:#B4B2A9}.na{text-align:center;color:#3B6D11;font-weight:600}
+</style></head><body>
+<div class="ph"><div class="in">
+<div class="notch"></div>
+<div class="p">
+<div class="img-row">
+<div class="img-ph">📷 원본</div>
+<div class="img-ph img-sam">🔬 SAM 분석</div>
+</div>
+<div class="rc">
+<div class="rt">마리가 좀 아프대</div>
+<div class="rs">후기 마름병 · 신뢰도 85%</div>
+<div class="pb"><div class="pf" style="width:9%;background:#97C459"></div></div>
+<div class="rv">병변 9.1% — 아직 초기야. 지금 잡으면 돼</div>
+</div>
+<div class="ch"><div class="av">😟</div><div class="bb"><div class="bn">분즈</div>마리한테 물어봤는데, 좀 힘들다고 해. 근데 너가 빨리 알아챈 거니까 괜찮아. 같이 돌보자</div></div>
+<div class="gbtn">💬 케어 가이드 받기</div>
+<div class="guide">
+습도 조절하고 과습 피하면 돼. 환기도 신경 써줘. 감염된 잎은 살짝 잘라주고, 다른 잎으로 번지지 않게 도구 소독해.
+<div class="gf">네가 이렇게 신경 써주는 거, 마리한테 큰 힘이 될 거야</div>
+</div>
+<hr class="divider">
+<div class="sec">마리한테 뭐 해줄 거야?</div>
+<div class="grid">
+<div class="btn"><span class="em">💧</span><span class="lb">물줬음</span></div>
+<div class="btn"><span class="em">☀️</span><span class="lb">자리옮김</span></div>
+<div class="btn"><span class="em">✂️</span><span class="lb">가지치기</span></div>
+<div class="btn"><span class="em">💊</span><span class="lb">약줬음</span></div>
+<div class="btn"><span class="em">🪴</span><span class="lb">분갈이</span></div>
+<div class="btn"><span class="em">🍃</span><span class="lb">잎닦음</span></div>
+<div class="btn"><span class="em">😊</span><span class="lb">그냥봄</span></div>
+</div>
+</div>
+<div class="nav"><div class="ni">🏠 홈</div><div class="na">📷 진단</div><div class="ni">📊 이력</div></div>
+</div></div>
+</body></html>

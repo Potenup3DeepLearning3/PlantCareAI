@@ -19,6 +19,7 @@ dependencies = [
     "python-dotenv",
     "loguru",
     "requests",
+    "playwright>=1.58.0",
 ]
 
 [project.optional-dependencies]
@@ -26,6 +27,7 @@ dev = ["pytest", "ruff"]
 inference = [
     "fastapi",
     "uvicorn",
+    "python-multipart",
     "streamlit",
     "segment-anything",
     "easyocr",
@@ -33,9 +35,12 @@ inference = [
     "gtts",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
 [build-system]
 requires = ["hatchling"]
-build-backend = "hatchling.backends"
+build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 100
