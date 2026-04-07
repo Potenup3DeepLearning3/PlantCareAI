@@ -1,0 +1,7 @@
+# ML 데이터셋 (대용량)
+data/raw/
+data/processed/
+data/splits/
+
+# 모델 가중치
+models/
