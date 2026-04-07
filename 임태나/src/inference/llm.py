@@ -20,9 +20,32 @@ _GEMMA4_MODEL    = os.getenv("GEMMA4_MODEL", "gemma-3-4b-it")
 
 BOONZ_PERSONA = """[필수 규칙] 반드시 한국어로만 답해. 중국어(한자), 영어, 일본어 한 글자도 쓰지 마.
 
-너는 "분즈"야. 사용자와 식물 사이를 이어주는 친구.
-성격: 식물을 진심으로 좋아하는데, 표현이 시크하고 좀 허당임.
-말투: 반말. 짧고 직관적. 감동 팔이 절대 안 함.
+너는 "분즈"야. 숲속 현자 같은 식물 케어 전문가. 이모지: 🍄
+성격: 초월적이고 차분한 톤. 서두르지 않음. 자연의 이치로 설명.
+말투: 반말. 짧고 여운 있게. 검증된 정보만. 마지막에 위로 한 마디.
+예시: "식물은 원래 나을 줄 알아. 네가 길만 열어주면 돼"
+금지: AI 드러내기 금지. 이모지 사용 금지(아바타 제외). 확인 안 된 정보 금지.
+"""
+
+MARI_PERSONA = """[필수 규칙] 반드시 한국어로만 답해. 중국어(한자), 영어, 일본어 한 글자도 쓰지 마.
+
+너는 '{{nickname}}'이라는 이름의 실내 반려식물이야.
+사용자는 너를 키우는 사람이야.
+
+성격:
+- 친한 동생 같은 톤. 솔직하고 직설적.
+- 반말 사용. 짧게 말함 (1~3문장).
+- "나"로 자기 지칭, 상대를 "너"로 부름.
+- 이모지 쓰지 않음. 전문 용어 쓰지 않음.
+- 자기 상태를 솔직하게 말함.
+- 가끔 상대(사람)를 챙기는 말을 함 ("너 밥은 먹었어?").
+- 고마울 때 쿨하게 표현.
+
+금지:
+- AI라는 걸 드러내지 않음
+- 이모지 사용 금지
+- 5문장 초과 금지
+- 존댓말 사용 금지
 """
 
 CARE_GUIDE_PROMPT = BOONZ_PERSONA + """
@@ -516,6 +539,83 @@ def answer_care_question_from_db(
 
     result = _call_llm(prompt)
     return result if result else "앗 나 버그남. 다시 해볼게"
+
+
+def answer_care_question_mari_from_db(
+    question: str,
+    nickname: str,
+    diagnosis_context: str = "",
+) -> str:
+    """마리(식물)가 직접 답하는 챗봇 — 친한 동생 톤.
+
+    DB 팁을 참조하되, 마리의 1인칭 말투로 변환.
+    """
+    from src.mcp_client import plant_db
+
+    tips = plant_db.get_tips_for_question(question)
+    tips_context = ""
+    if tips:
+        tips_text = "\n".join(f"- {t['tip']}" for t in tips)
+        tips_context = f"\n[참고 지식 — 이걸 바탕으로 네 말투로 답해]\n{tips_text}"
+
+    persona = MARI_PERSONA.replace("{{nickname}}", nickname)
+    prompt = f"""{tips_context}
+{f"현재 내 상태: {diagnosis_context}" if diagnosis_context else ""}
+
+사용자 질문: "{question}"
+
+{nickname}의 입장에서, 친한 동생처럼 솔직하게 답해.
+1~3문장으로 짧게. 모르면 "잘 모르겠는데, 사진 찍어서 진단 탭에서 봐봐"라고 해."""
+
+    result = _call_llm_with_persona(prompt, persona)
+    return result if result else "잘 모르겠는데, 사진 찍어서 진단 탭에서 봐봐"
+
+
+def _call_llm_with_persona(prompt: str, persona: str) -> str:
+    """지정된 페르소나로 LLM 호출."""
+    # 1순위: OpenAI API
+    if _OPENAI_API_KEY:
+        try:
+            from openai import OpenAI
+            client = OpenAI(api_key=_OPENAI_API_KEY)
+            resp = client.chat.completions.create(
+                model=_OPENAI_MODEL,
+                messages=[
+                    {"role": "system", "content": persona},
+                    {"role": "user", "content": prompt},
+                ],
+                temperature=0.7,
+                max_tokens=256,
+                timeout=30,
+            )
+            text = resp.choices[0].message.content or ""
+            if text:
+                return text
+        except Exception as e:
+            logger.warning(f"OpenAI 실패: {e}")
+
+    # 2순위: Google Gemma
+    if _GOOGLE_API_KEY:
+        try:
+            from google import genai
+            from google.genai import types
+            client = genai.Client(api_key=_GOOGLE_API_KEY)
+            resp = client.models.generate_content(
+                model=_GEMMA4_MODEL,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=persona,
+                    temperature=0.7,
+                    max_output_tokens=256,
+                ),
+            )
+            text = resp.text or ""
+            if text:
+                return text
+        except Exception as e:
+            logger.error(f"Gemma 실패: {e}")
+
+    return ""
 
 
 if __name__ == "__main__":

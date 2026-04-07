@@ -90,14 +90,22 @@ async def text_consult(
     question: str = Form(...),
     nickname: str = Form(""),
     diagnosis_context: str = Form(""),
+    persona: str = Form("boonz"),
 ) -> ConsultResponse:
-    """텍스트 상담: LLM 응답 (TTS 없음)."""
+    """텍스트 상담: LLM 응답 (TTS 없음).
+
+    persona: "mari" → 마리(식물) 직접 말하기, "boonz" → 분즈 케어 전문가 (기본값)
+    """
     name = nickname or "식물"
     start = time.perf_counter()
 
-    response_text = respond_to_voice(
-        question, plant_nickname=name, current_diagnosis=diagnosis_context,
-    )
+    if persona == "mari":
+        from src.inference.llm import answer_care_question_mari_from_db
+        response_text = answer_care_question_mari_from_db(question, name, diagnosis_context)
+    else:
+        response_text = respond_to_voice(
+            question, plant_nickname=name, current_diagnosis=diagnosis_context,
+        )
 
     elapsed_ms = (time.perf_counter() - start) * 1000
 
@@ -105,7 +113,7 @@ async def text_consult(
         transcript="",
         question=question,
         answer=ConsultAnswerResponse(text=response_text, audio_url=""),
-        boonz=BoonzResponse(mood="happy", message=_boonz_msg(name, response_text)),
+        boonz=BoonzResponse(mood="happy", message=response_text),
         suggested_action=_suggest_action(question),
         processing_time_ms=round(elapsed_ms, 1),
     )

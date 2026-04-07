@@ -1,0 +1,148 @@
+{
+  "description": "CLIP 폴백용 텍스트 후보. EfficientNet 12cls 질병 외의 환경/해충/영양 문제를 커버.",
+  "note": "EfficientNet 신뢰도 < 70%일 때 CLIP이 이 후보들과 이미지 유사도를 비교하여 상태를 판단.",
+  "sources": [
+    "UC Davis IPM 'Guide for Diagnosing Houseplant Problems' (Pittenger & Hodel, 2020)",
+    "Connecticut CAES 'Diagnosis of Common Houseplant Problems'",
+    "Penn State Extension 'Preventing, Diagnosing, and Correcting Common Houseplant Problems'",
+    "Univ. of Maryland Extension 'Diagnose Indoor Plant Problems'"
+  ],
+
+  "conditions": [
+    {
+      "id": "overwatering",
+      "category": "environmental",
+      "clip_text_en": "a houseplant with yellowing leaves from overwatering and soggy soil",
+      "condition_kr": "과습 (물 과다)",
+      "symptoms": "아래쪽 잎부터 황변, 잎이 물컹해짐, 줄기 밑부분 무름, 흙에 곰팡이, 날파리 발생",
+      "treatment": "관수 중단. 흙 완전히 마를 때까지 기다리기. 심하면 흙 교체. 배수구 확인",
+      "source": "UC Davis IPM Table 1; Connecticut CAES"
+    },
+    {
+      "id": "underwatering",
+      "category": "environmental",
+      "clip_text_en": "a wilting drooping houseplant with dry crispy soil that needs water",
+      "condition_kr": "건조 (물 부족)",
+      "symptoms": "식물 전체 처짐, 잎 끝부터 갈변, 흙이 화분 벽에서 떨어짐, 잎이 바삭해짐",
+      "treatment": "저면관수로 천천히 수분 보충. 한 번에 흠뻑 주기. 이후 규칙적 관수",
+      "source": "UC Davis IPM Table 1; Penn State Extension"
+    },
+    {
+      "id": "sunburn",
+      "category": "environmental",
+      "clip_text_en": "a houseplant with bleached white or brown scorched patches from direct sunlight",
+      "condition_kr": "직사광 화상",
+      "symptoms": "잎에 흰색/갈색 바랜 반점, 잎 가장자리 갈변, 색이 빠짐, 반점 위치가 빛 받는 쪽에 집중",
+      "treatment": "직사광 피해 밝은 간접광으로 이동. 화상 입은 잎은 회복 안 되니 제거. 서서히 광량 조절",
+      "source": "Connecticut CAES; UC Davis IPM"
+    },
+    {
+      "id": "low_light",
+      "category": "environmental",
+      "clip_text_en": "a houseplant with leggy stretched thin stems and small pale leaves from insufficient light",
+      "condition_kr": "빛 부족 (웃자람)",
+      "symptoms": "줄기가 가늘고 길게 늘어남, 잎 사이 간격 넓어짐, 잎이 작고 연해짐, 전체적으로 창백",
+      "treatment": "밝은 곳으로 이동. 식물등 추가 고려. 늘어난 줄기는 잘라서 삽목 가능",
+      "source": "Connecticut CAES; Penn State Extension"
+    },
+    {
+      "id": "cold_damage",
+      "category": "environmental",
+      "clip_text_en": "a houseplant with blackened wilted leaves from cold temperature damage or frost",
+      "condition_kr": "냉해 (저온 피해)",
+      "symptoms": "잎이 검게 변함, 물컹해지며 처짐, 새잎/꽃봉오리 고사, 급격한 낙엽",
+      "treatment": "따뜻한 곳으로 즉시 이동 (18°C 이상). 손상 잎 제거. 회복까지 관수 줄이기",
+      "source": "Connecticut CAES; UC Davis IPM"
+    },
+    {
+      "id": "heat_stress",
+      "category": "environmental",
+      "clip_text_en": "a houseplant with curling dry leaves from excessive heat or hot dry air",
+      "condition_kr": "고온/건조 스트레스",
+      "symptoms": "잎이 안쪽으로 말림, 잎 끝 갈변, 전체적으로 시들어 보임, 흙이 빨리 마름",
+      "treatment": "에어컨/히터 바람 직접 피하기. 자갈 트레이로 습도 보충. 분무. 시원한 곳으로 이동",
+      "source": "UC Davis IPM; Penn State Extension"
+    },
+    {
+      "id": "fertilizer_burn",
+      "category": "nutritional",
+      "clip_text_en": "a houseplant with brown crispy leaf tips and edges from fertilizer burn or salt buildup",
+      "condition_kr": "비료 과다 (비료 화상)",
+      "symptoms": "잎 끝/가장자리 갈변, 흙 표면에 흰 결정(염분), 뿌리 갈변, 새잎 기형",
+      "treatment": "물을 흠뻑 주어 염분 씻어내기 (2~3회). 비료 중단 4주 이상. 심하면 흙 교체",
+      "source": "Connecticut CAES; UC Davis IPM Table 1"
+    },
+    {
+      "id": "nutrient_deficiency",
+      "category": "nutritional",
+      "clip_text_en": "a houseplant with pale yellow leaves and green veins from nutrient deficiency chlorosis",
+      "condition_kr": "영양 부족 (결핍)",
+      "symptoms": "잎맥 사이 황변 (엽맥은 녹색 유지), 전체적으로 창백, 성장 둔화, 새잎이 작고 기형",
+      "treatment": "액체 비료로 영양 보충. 또는 새 흙으로 분갈이. 둘 중 하나만 먼저 (동시 금지)",
+      "source": "Connecticut CAES; OurHouseplants.com"
+    },
+    {
+      "id": "spider_mites",
+      "category": "pest",
+      "clip_text_en": "a houseplant with tiny white speckles on leaves and fine webbing from spider mite infestation",
+      "condition_kr": "응애 (거미진드기)",
+      "symptoms": "잎 표면에 미세한 흰 점, 잎 뒷면에 거미줄 같은 실, 잎 갈변 후 낙엽, 전체적으로 활력 저하",
+      "treatment": "잎 앞뒤로 물 분무 (응애는 물 싫어함). 님오일 스프레이. 심하면 격리 후 반복 처리",
+      "source": "UC Davis IPM; Penn State Extension"
+    },
+    {
+      "id": "mealybugs",
+      "category": "pest",
+      "clip_text_en": "a houseplant with white cottony masses on stems and leaf joints from mealybug infestation",
+      "condition_kr": "깍지벌레 (가루깍지벌레)",
+      "symptoms": "줄기/잎 겨드랑이에 흰 솜 같은 덩어리, 끈적한 분비물(감로), 그 위에 검은 곰팡이(그을음병)",
+      "treatment": "알코올 묻힌 면봉으로 하나씩 제거. 님오일 또는 살충비누 스프레이. 반복 처리 필요",
+      "source": "UC Davis IPM; Univ. of Maryland Extension"
+    },
+    {
+      "id": "aphids",
+      "category": "pest",
+      "clip_text_en": "a houseplant with clusters of small green or black aphid insects on new growth tips",
+      "condition_kr": "진딧물",
+      "symptoms": "새순/꽃봉오리에 작은 벌레 군집, 잎 뒤틀림/기형, 끈적한 감로, 새잎 성장 불량",
+      "treatment": "물 분사로 떼어내기. 살충비누 스프레이. 님오일. 심하면 감염 부위 잘라내기",
+      "source": "UC Davis IPM; Penn State Extension"
+    },
+    {
+      "id": "scale",
+      "category": "pest",
+      "clip_text_en": "a houseplant with small brown oval bumps on stems and leaves from scale insect infestation",
+      "condition_kr": "깍지벌레 (갈색깍지)",
+      "symptoms": "줄기/잎에 갈색 타원형 돌기, 끈적한 감로, 잎 황변 후 낙엽, 가지 쇠퇴",
+      "treatment": "알코올 면봉으로 긁어내기. 살충비누. 심하면 감염 가지 잘라내기. 반복 처리",
+      "source": "UC Davis IPM; Univ. of Maryland Extension"
+    },
+    {
+      "id": "fungus_gnats",
+      "category": "pest",
+      "clip_text_en": "tiny black flying insects around houseplant soil surface from fungus gnat infestation",
+      "condition_kr": "날파리 (버섯파리)",
+      "symptoms": "흙 주변에 작은 검은 파리, 유충이 뿌리 손상, 식물 성장 둔화",
+      "treatment": "겉흙 마르게 관리. 마사토로 겉흙 덮기. 끈끈이 트랩. 과습 방지가 핵심",
+      "source": "UC Davis IPM; Penn State Extension"
+    },
+    {
+      "id": "edema",
+      "category": "environmental",
+      "clip_text_en": "a houseplant with raised corky bumps or blisters on undersides of leaves from edema",
+      "condition_kr": "부종 (에데마)",
+      "symptoms": "잎 뒷면에 거칠거칠한 코르크질 돌기, 물집 같은 부풀음, 잎 황변 후 처짐",
+      "treatment": "관수 줄이기. 광량 늘리기. 통풍 개선. 손상된 잎은 회복 안 되니 제거",
+      "source": "Penn State Extension; OurHouseplants.com"
+    },
+    {
+      "id": "healthy",
+      "category": "healthy",
+      "clip_text_en": "a healthy green houseplant with vibrant leaves and no visible problems",
+      "condition_kr": "건강",
+      "symptoms": "정상적인 녹색 잎, 활발한 성장, 문제 없음",
+      "treatment": "현재 상태 유지. 규칙적 관수, 적절한 광량, 정기 관찰",
+      "source": "일반"
+    }
+  ]
+}

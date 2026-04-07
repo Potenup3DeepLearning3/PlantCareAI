@@ -1,3 +1,88 @@
+# PlantCare AI — Phase 검증 결과 (2026-04-07 GUIDE_master_v2.md 재구현)
+
+## GUIDE_master_v2.md Phase 결과
+
+| Phase | 내용 | 상태 | 비고 |
+|-------|------|------|------|
+| 1 | 데이터 세팅 (DB) | ✅ | diseases 12종 + care_tips 34건. init_db.py 정상 실행 |
+| 2 | LLM 연동 | ✅ | MARI_PERSONA + BOONZ_PERSONA(초월자) 추가. answer_care_question_mari_from_db() 추가 |
+| 3 | MCP Client | ✅ | detail→source 컬럼명 버그 수정. get_tips_for_question() 정상 동작 |
+| 4 | CLIP 폴백 | ✅ | clip_conditions.json (UC Davis IPM 15개) 연동. describe_plant_state() tuple 반환으로 변경 |
+| 5 | Streamlit 4탭 | ✅ | 3탭(홈/진단/이력) → 4탭(🏠홈/📷진단/📔일기/🌱성장) |
+| 6 | 관계 성장 | ✅ | calculate_relationship() 마리 톤 메시지로 업데이트 |
+| 7 | 디자인 | ✅ | 모카 브라운 유지 (#8B7355). mari()/boonz() 컴포넌트 분리 |
+| 8 | 목업 비교 | ✅ | mockup_v3/ 4장 참조. 4탭 네비 + 말풍선 구조 일치 |
+
+## 핵심 변경사항 (v1 → v2)
+
+### 화자 구조
+- 탭1 홈: 마리 직접 말함 (친한 동생, 1인칭). `mari()` 컴포넌트
+- 탭2 진단: 분즈 🍄 (초월자). `boonz()` 컴포넌트 (🍄 아바타 고정)
+- 탭3 일기: 마리 (회복 여정 + 타임라인 + 각 기록에 마리 코멘트)
+- 탭4 성장: 마리 (리포트 + 🪞 마리가 본 너 + 관계 여정 + 마무리)
+
+### CARE_RESPONSES 변경
+- 이전: "마리한테 전해놨어! 물 받아서 좋아하겠다"
+- 이후: "아 시원하다. 고마워" (마리 직접)
+
+### 챗봇 분리
+- 탭1 챗봇: persona=mari → answer_care_question_mari_from_db() (친한 동생 톤)
+- 탭2 챗봇: persona=boonz → respond_to_voice() (초월자 톤)
+
+### MILESTONES 업데이트
+- "첫 기록이다! 앞으로 잘 부탁해" (마리 직접)
+- "벌써 5번째. 너 꽤 꾸준한 거 알아?" 등
+
+### CLIP 업데이트
+- clip_conditions.json 기반 (UC Davis IPM 출처, 15개 조건)
+- describe_plant_state() → (description, details) tuple 반환
+- details에 symptoms, treatment, source 포함
+
+## 수정 파일 목록
+- `src/frontend/app.py` — 4탭 전체 재작성
+- `src/inference/llm.py` — MARI_PERSONA, answer_care_question_mari_from_db(), _call_llm_with_persona()
+- `src/api/routes/voice.py` — persona 파라미터 추가
+- `src/inference/clip_analyzer.py` — clip_conditions.json 연동
+- `src/mcp_client.py` — detail→source 버그 수정
+
+## 테스트 체크리스트
+
+### 탭1 홈
+- [x] 마리 동적 인사 (시간별/공백별) — get_mari_greeting 로직 구현
+- [x] 식물 카드 + 관계 단계 (🌱→🌿→🪴→🌳)
+- [x] 통계 카드 (함께한 날/연속 돌봄/병변 변화)
+- [x] 원터치 버튼 7개 → 마리 직접 응답 ("아 시원하다. 고마워")
+- [x] 넛지 (3번 중 1번 랜덤) — "근데 너 오늘 물 마셨어?"
+- [x] 이정표 — 마리 직접 ("첫 기록이다!", "벌써 5번째" 등)
+- [x] 마리 챗봇 → persona=mari API 호출
+
+### 탭2 진단
+- [x] 사진 업로드 → 분석하기 버튼
+- [x] 진단 결과 카드 (병명 + 신뢰도 + 병변%)
+- [x] 분즈 🍄 한마디 (초기/중기/후기별 메시지)
+- [x] 케어 가이드 버튼 + 출처 표시
+- [x] CLIP 폴백 (신뢰도 <70%) — clip_conditions.json 기반
+- [x] 분즈 챗봇 → persona=boonz API 호출
+
+### 탭3 일기
+- [x] 회복 여정 🥀→🌳 (진단 기록 기반)
+- [x] 마리 한마디 (회복률에 따라 분기)
+- [x] 돌봄 일기 타임라인 (날짜 역순)
+- [x] 각 기록에 마리 코멘트 (MARI_LOG_COMMENTS)
+
+### 탭4 성장
+- [x] 돌봄 리포트 (총 기록/연속 돌봄/병변 감소)
+- [x] 돌봄 유형 — 마리 톤 (CARE_TYPES_MARI)
+- [x] 잘하고 있는 것 + 한 가지 팁
+- [x] 🪞 마리가 본 너 (접속 패턴 분석)
+- [x] 관계 성장 여정 (수직 타임라인)
+- [x] 마리 마무리 한마디 (days/total_logs 기반)
+- [x] 분즈 패턴 분석 버튼
+
+---
+
+# (이전 기록 — GUIDE_master.md v1)
+
 # PlantCare AI — Phase 검증 결과 (2026-04-07 재검증)
 
 ## GUIDE_master.md Phase 1~8 완료 현황

@@ -43,12 +43,12 @@ class PlantCareDB:
         with self._conn() as db:
             if subcategory:
                 rows = db.execute(
-                    "SELECT subcategory, tip, detail FROM care_tips WHERE category = ? AND subcategory LIKE ?",
+                    "SELECT subcategory, tip, source FROM care_tips WHERE category = ? AND subcategory LIKE ?",
                     (category, f"%{subcategory}%")
                 ).fetchall()
             else:
                 rows = db.execute(
-                    "SELECT subcategory, tip, detail FROM care_tips WHERE category = ?",
+                    "SELECT subcategory, tip, source FROM care_tips WHERE category = ?",
                     (category,)
                 ).fetchall()
         return [dict(r) for r in rows]
@@ -72,7 +72,7 @@ class PlantCareDB:
         placeholders = ",".join("?" * len(matched_categories))
         with self._conn() as db:
             rows = db.execute(
-                f"SELECT subcategory, tip, detail FROM care_tips WHERE category IN ({placeholders}) LIMIT ?",
+                f"SELECT subcategory, tip, source FROM care_tips WHERE category IN ({placeholders}) LIMIT ?",
                 (*matched_categories, max_tips)
             ).fetchall()
         return [dict(r) for r in rows]
