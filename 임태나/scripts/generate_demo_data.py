@@ -16,7 +16,7 @@ PLANTS_FILE = Path("data/plants.json")
 CARE_LOG_FILE = Path("data/care_log.jsonl")
 
 NICKNAME = "마리"
-START_DATE = date(2026, 3, 7)  # 30일 전
+START_DATE = date.today() - timedelta(days=30)
 
 # 병변 비율 완화 추세 (30일치 ~ 5구간)
 LESION_SCHEDULE: list[tuple[int, int, float]] = [
@@ -53,18 +53,24 @@ def generate_plants() -> None:
     if PLANTS_FILE.exists():
         plants = json.loads(PLANTS_FILE.read_text(encoding="utf-8"))
 
-    if not any(p["nickname"] == NICKNAME for p in plants):
+    # 마리가 있으면 registered 날짜 갱신, 없으면 추가
+    updated = False
+    for p in plants:
+        if p["nickname"] == NICKNAME:
+            p["species"] = "Monstera"
+            p["registered"] = START_DATE.isoformat()
+            updated = True
+            break
+    if not updated:
         plants.append({
             "nickname": NICKNAME,
-            "species": "Begonia (Begonia spp.)",
+            "species": "Monstera",
             "registered": START_DATE.isoformat(),
         })
-        PLANTS_FILE.write_text(
-            json.dumps(plants, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
-        logger.info(f"plants.json: {NICKNAME} 등록 완료")
-    else:
-        logger.info(f"plants.json: {NICKNAME} 이미 존재, 스킵")
+    PLANTS_FILE.write_text(
+        json.dumps(plants, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    logger.info(f"plants.json: {NICKNAME} registered={START_DATE.isoformat()} 설정 완료")
 
 
 def generate_care_logs() -> None:
