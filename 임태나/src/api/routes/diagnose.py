@@ -19,14 +19,18 @@ from src.inference.diagnose import DiagnosisPipeline
 from src.inference.llm import get_boonz_mood
 
 router = APIRouter()
-_pipeline: DiagnosisPipeline | None = None
+
+# 서버 시작 시 1회 생성 — 이후 모든 요청이 이 인스턴스를 공유
+_pipeline = DiagnosisPipeline()
 
 
-def _get_pipeline() -> DiagnosisPipeline:
-    global _pipeline
-    if _pipeline is None:
-        _pipeline = DiagnosisPipeline()
-    return _pipeline
+def warmup() -> None:
+    """서버 startup 시 호출 — 모델 파일을 미리 메모리에 올린다."""
+    logger.info("DiagnosisPipeline 사전 로드 시작")
+    _pipeline._ensure_species()
+    _pipeline._ensure_disease()
+    _pipeline._ensure_sam()
+    logger.info("DiagnosisPipeline 사전 로드 완료")
 
 
 @router.post("/diagnose", response_model=DiagnoseResponse)
@@ -53,8 +57,7 @@ async def diagnose(
     image_rgb = np.array(pil_image)
 
     try:
-        pipeline = _get_pipeline()
-        result = pipeline.diagnose(image_rgb)
+        result = _pipeline.diagnose(image_rgb)
     except Exception as e:
         logger.error(f"진단 실패: {e}")
         raise HTTPException(status_code=500, detail=f"진단 중 오류가 발생했습니다: {e}")

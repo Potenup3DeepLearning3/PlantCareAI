@@ -6,20 +6,50 @@
   /consult/text        ← DB 팁 참조 챗봇
   /pattern/{nickname}  ← 돌봄 패턴 분석
   /api/plants, /api/care-log, /api/timeline/{nickname}
+
+실행 방법 (ModuleNotFoundError 방지):
+  프로젝트 루트(임태나/) 디렉토리에서 실행할 것.
+  올바른 명령:
+    cd 임태나
+    uvicorn src.api.main:app --reload --port 8000
+  잘못된 명령 (src/를 찾지 못함):
+    cd 임태나/src/api && uvicorn main:app  ← 금지
 """
 
 import json
+from contextlib import asynccontextmanager
 
 from fastapi import Body, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from loguru import logger
 
 from src.api.routes import diagnose, medicine, plants, voice
 from src.config import CARE_LOG_JSONL
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """서버 시작 시 모델 사전 로드 — API 호출마다 로드하지 않는다."""
+    logger.info("=== 서버 시작: 모델 사전 로드 ===")
+    # DiagnosisPipeline (species + disease + SAM)
+    diagnose.warmup()
+    # CLIP (신뢰도 낮을 때 폴백)
+    try:
+        from src.inference.clip_analyzer import _load_clip
+        _load_clip()
+        logger.info("CLIP 사전 로드 완료")
+    except Exception as e:
+        logger.warning(f"CLIP 사전 로드 실패 (폴백 시 재시도): {e}")
+    logger.info("=== 모델 사전 로드 완료 ===")
+    yield  # 서버 실행
+    logger.info("서버 종료")
+
 
 app = FastAPI(
     title="PlantCare AI",
     description="반려식물 건강 진단 + 맞춤 케어 시스템",
     version="0.2.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
