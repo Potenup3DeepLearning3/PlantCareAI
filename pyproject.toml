@@ -37,6 +37,7 @@ dependencies = [
     "datasets>=4.8.4",
     "env>=0.1.0",
     "dataset>=1.6.2",
+    "plotly>=6.6.0",
 ]
 
 [tool.uv.sources]

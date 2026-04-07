@@ -378,6 +378,7 @@ CARE_RESPONSES: dict[str, list[str]] = {
 # ========================================
 # 데이터 함수
 # ========================================
+@st.cache_data
 def load_plants():
     if PLANTS_FILE.exists():
         return json.loads(PLANTS_FILE.read_text(encoding="utf-8"))
@@ -392,10 +393,12 @@ def save_plant(nickname):
     })
     PLANTS_FILE.parent.mkdir(parents=True, exist_ok=True)
     PLANTS_FILE.write_text(json.dumps(plants, ensure_ascii=False, indent=2), encoding="utf-8")
+    load_plants.clear()
 
 def delete_plant(nickname):
     plants = [p for p in load_plants() if p["nickname"] != nickname]
     PLANTS_FILE.write_text(json.dumps(plants, ensure_ascii=False, indent=2), encoding="utf-8")
+    load_plants.clear()
 
 def update_species(nickname, species):
     plants = load_plants()
@@ -403,7 +406,9 @@ def update_species(nickname, species):
         if p["nickname"] == nickname:
             p["species"] = species
     PLANTS_FILE.write_text(json.dumps(plants, ensure_ascii=False, indent=2), encoding="utf-8")
+    load_plants.clear()
 
+@st.cache_data
 def load_care_log(nickname=None):
     if not CARE_LOG_FILE.exists():
         return []
@@ -428,6 +433,7 @@ def save_care_log(nickname, action):
     CARE_LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(CARE_LOG_FILE, "a", encoding="utf-8") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    load_care_log.clear()
 
 def compute_streak(logs: list) -> int:
     if not logs:
@@ -472,23 +478,18 @@ def chip(text: str, color: str = "#386A1F", bg: str = "#C3E8A8") -> str:
 def boonz(mood: str, message: str) -> None:
     emojis = {"happy": "😊", "worried": "😟", "sad": "😢", "loading": "👀", "default": "🌱"}
     emoji = emojis.get(mood, "🌱")
-    col1, col2 = st.columns([1, 8])
-    with col1:
-        st.markdown(
-            f'<div style="width:40px;height:40px;background:#EAF3DE;border-radius:50%;'
-            f'display:flex;align-items:center;justify-content:center;font-size:20px;">{emoji}</div>',
-            unsafe_allow_html=True,
-        )
-    with col2:
-        st.markdown(
-            f'<div style="background:#fff;border:1px solid #E5E0D5;'
-            f'border-radius:16px 16px 16px 4px;padding:10px 14px;'
-            f'box-shadow:0 1px 3px rgba(0,0,0,0.06);margin-bottom:4px;">'
-            f'<div style="color:#386A1F;font-size:11px;font-weight:600;margin-bottom:2px;">분즈</div>'
-            f'<div style="color:#1A1C18;font-size:14px;line-height:1.55;">{message}</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
+    st.markdown(
+        f'<div style="display:flex;gap:10px;align-items:flex-start;margin:4px 0 8px;">'
+        f'<div style="width:40px;height:40px;background:#EAF3DE;border-radius:50%;flex-shrink:0;'
+        f'display:flex;align-items:center;justify-content:center;font-size:20px;">{emoji}</div>'
+        f'<div style="background:#fff;border:1px solid #E5E0D5;'
+        f'border-radius:16px 16px 16px 4px;padding:10px 14px;flex:1;'
+        f'box-shadow:0 1px 3px rgba(0,0,0,0.06);">'
+        f'<div style="color:#386A1F;font-size:11px;font-weight:600;margin-bottom:2px;">분즈</div>'
+        f'<div style="color:#1A1C18;font-size:14px;line-height:1.55;">{message}</div>'
+        f'</div></div>',
+        unsafe_allow_html=True,
+    )
 
 def _show_boonz(result: dict, default_mood: str = "default") -> None:
     b = result.get("boonz", {})
@@ -514,7 +515,8 @@ def stat_card_row(stats: list[tuple]) -> None:
         unsafe_allow_html=True,
     )
 
-def timeline_entry(log_date: str, action: str, disease: str = "", lesion: float = 0) -> None:
+def _timeline_entry_html(log_date: str, action: str, disease: str = "", lesion: float = 0) -> str:
+    """타임라인 항목 HTML 반환 (st.markdown 호출 없음 — 배치 렌더링용)."""
     label = ACTION_LABELS.get(action, action)
     color = ACTION_COLORS.get(action, "#73796E")
     disease_kr = DISEASE_KOREAN.get(disease, disease)
@@ -524,7 +526,7 @@ def timeline_entry(log_date: str, action: str, disease: str = "", lesion: float 
             f'<div style="font-size:11px;color:#73796E;margin-top:2px;">'
             f'{disease_kr} — 병변 {lesion*100:.0f}%</div>'
         )
-    st.markdown(
+    return (
         f'<div style="display:flex;gap:12px;margin:2px 0;">'
         f'<div style="display:flex;flex-direction:column;align-items:center;width:16px;">'
         f'<div style="width:10px;height:10px;border-radius:50%;background:{color};flex-shrink:0;margin-top:6px;"></div>'
@@ -535,9 +537,12 @@ def timeline_entry(log_date: str, action: str, disease: str = "", lesion: float 
         f'<div style="font-size:13px;font-weight:500;color:#1A1C18;">{label}</div>'
         f'<div style="font-size:11px;color:#B4B2A9;margin-top:2px;">{log_date}</div>'
         f'{disease_html}'
-        f'</div></div>',
-        unsafe_allow_html=True,
+        f'</div></div>'
     )
+
+
+def timeline_entry(log_date: str, action: str, disease: str = "", lesion: float = 0) -> None:
+    st.markdown(_timeline_entry_html(log_date, action, disease, lesion), unsafe_allow_html=True)
 
 def milestone_chip_render(stage: str) -> None:
     bg_map = {
@@ -872,7 +877,8 @@ with tab2:
             "질문", placeholder="예: 잎이 노랗게 변하는데 왜 그래?",
             key="q_text", label_visibility="collapsed",
         )
-        if question:
+        if question and question != st.session_state.get("last_processed_q"):
+            st.session_state.last_processed_q = question
             st.session_state.chat_history.append({"role": "user", "text": question})
             try:
                 diagnosis_context = ""
@@ -945,11 +951,15 @@ with tab4:
     # ── A. 원터치 케어 ──
     st.markdown(f"**오늘 {nickname}한테 뭐 해줬어?**")
     care_cols = st.columns(4)
+    _care_clicked = None
     for i, (label, action) in enumerate(ACTION_LABELS.items()):
         with care_cols[i % 4]:
             if st.button(label, key=f"c_{action}", use_container_width=True):
-                save_care_log(nickname, action)
-                st.rerun()
+                _care_clicked = (label, action)
+    if _care_clicked:
+        save_care_log(nickname, _care_clicked[1])
+        st.toast(f"{_care_clicked[0]} 기록했어 ✓")
+        st.rerun()
 
     st.divider()
 
@@ -1018,9 +1028,14 @@ with tab4:
     st.markdown(f"### {nickname}와의 이야기")
     if care_logs:
         recent = list(reversed(care_logs[-20:]))
+        stages = ["🌱 새로운 만남", "🌿 알아가는 중", "🪴 함께하는 사이", "🌳 오랜 친구"]
+        bg_map = {
+            "🌱 새로운 만남": "#C3E8A8", "🌿 알아가는 중": "#B7D4A0",
+            "🪴 함께하는 사이": "#9EC080", "🌳 오랜 친구": "#6A9E50",
+        }
         prev_stage_idx = None
+        batch_html = ""
         for log in recent:
-            # 관계 단계 변경 milestone 삽입
             log_days_ago = 0
             try:
                 ld = date.fromisoformat(log["date"][:10])
@@ -1039,16 +1054,19 @@ with tab4:
                 log_stage_idx = 3
 
             if prev_stage_idx is not None and log_stage_idx != prev_stage_idx:
-                stages = ["🌱 새로운 만남", "🌿 알아가는 중", "🪴 함께하는 사이", "🌳 오랜 친구"]
-                milestone_chip_render(stages[log_stage_idx])
+                # 마일스톤 칩도 HTML로 배치
+                stage_name = stages[log_stage_idx]
+                bg = bg_map.get(stage_name, "#C3E8A8")
+                batch_html += (
+                    f'<div style="text-align:center;margin:12px 0 4px;">'
+                    f'<span style="background:{bg};color:#245213;border-radius:100px;'
+                    f'padding:5px 16px;font-size:12px;font-weight:600;">{stage_name}</span></div>'
+                )
             prev_stage_idx = log_stage_idx
-
-            timeline_entry(
-                log["date"],
-                log.get("action", ""),
-                log.get("disease", ""),
-                log.get("lesion", 0),
+            batch_html += _timeline_entry_html(
+                log["date"], log.get("action", ""), log.get("disease", ""), log.get("lesion", 0),
             )
+        st.markdown(batch_html, unsafe_allow_html=True)
     else:
         boonz("default", f"아직 {nickname}이랑 기록이 없네. 위에 버튼 하나만 눌러봐. 그게 시작이야")
 

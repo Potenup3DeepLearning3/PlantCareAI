@@ -222,6 +222,7 @@ def fmt_date_kr(date_str):
 # ═══════════════════════════════════════
 # 데이터
 # ═══════════════════════════════════════
+@st.cache_data
 def load_plants():
     if PLANTS_FILE.exists():
         return json.loads(PLANTS_FILE.read_text(encoding="utf-8"))
@@ -232,10 +233,12 @@ def save_plant(nickname):
     plants.append({"nickname":nickname,"species":"","registered":datetime.now().strftime("%Y-%m-%d")})
     PLANTS_FILE.parent.mkdir(parents=True, exist_ok=True)
     PLANTS_FILE.write_text(json.dumps(plants, ensure_ascii=False, indent=2), encoding="utf-8")
+    load_plants.clear()
 
 def delete_plant(nickname):
     plants = [p for p in load_plants() if p["nickname"] != nickname]
     PLANTS_FILE.write_text(json.dumps(plants, ensure_ascii=False, indent=2), encoding="utf-8")
+    load_plants.clear()
 
 def update_species(nickname, species):
     plants = load_plants()
@@ -243,7 +246,9 @@ def update_species(nickname, species):
         if p["nickname"] == nickname:
             p["species"] = species
     PLANTS_FILE.write_text(json.dumps(plants, ensure_ascii=False, indent=2), encoding="utf-8")
+    load_plants.clear()
 
+@st.cache_data
 def load_care_log(nickname=None):
     if not CARE_LOG_FILE.exists():
         return []
@@ -268,6 +273,7 @@ def save_care_log(nickname, action):
     CARE_LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(CARE_LOG_FILE, "a", encoding="utf-8") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    load_care_log.clear()
 
 def get_streak(care_logs):
     if not care_logs:
@@ -609,27 +615,32 @@ with tab_home:
         else:
             boonz("happy", msg["content"])
 
-    question = st.text_input(
-        "질문", placeholder="예: 잎이 노랗게 변하는데 왜 그래?",
-        key="q_home", label_visibility="collapsed",
-    )
-    if question:
-        st.session_state.chat_history.append({"role":"user","content":question})
+    # form: submit 클릭 시 1회만 호출
+    with st.form("form_home_q", clear_on_submit=True):
+        question = st.text_input(
+            "질문", placeholder="예: 잎이 노랗게 변하는데 왜 그래?",
+            label_visibility="collapsed",
+        )
+        submitted_home = st.form_submit_button("보내기", use_container_width=True)
+
+    if submitted_home and question:
+        st.session_state.chat_history.append({"role": "user", "content": question})
         diag_ctx = ""
         if "last_diagnosis" in st.session_state:
             d = st.session_state.last_diagnosis
-            dk = DISEASE_KOREAN.get(d.get("disease",""), d.get("disease",""))
+            dk = DISEASE_KOREAN.get(d.get("disease", ""), d.get("disease", ""))
             diag_ctx = f"현재 {nickname}: {dk}, 병변 {d.get('lesion',0)*100:.0f}%"
         try:
             resp = requests.post(
                 f"{FASTAPI_URL}/consult/text",
-                data={"question":question,"nickname":nickname,"diagnosis_context":diag_ctx},
+                data={"question": question, "nickname": nickname, "diagnosis_context": diag_ctx},
                 timeout=30,
             )
-            answer = resp.json().get("boonz",{}).get("message","") or resp.json().get("answer",{}).get("text","")
+            answer = resp.json().get("boonz", {}).get("message", "") or resp.json().get("answer", {}).get("text", "")
         except Exception:
             answer = "앗 나 잠깐 버그남. 근데 괜찮아, 다시 해볼게"
-        st.session_state.chat_history.append({"role":"boonz","content":answer})
+        if not st.session_state.chat_history or st.session_state.chat_history[-1].get("content") != answer:
+            st.session_state.chat_history.append({"role": "boonz", "content": answer})
         st.rerun()
 
     # 식물 관리
@@ -658,38 +669,60 @@ with tab_diag:
 
     if not uploaded:
         boonz("default", f"{nickname} 사진 줘. 내가 봐줌")
+        # 파일 제거 시 캐시 초기화
+        st.session_state.pop("_diag_file_id", None)
+        st.session_state.pop("_diag_result", None)
 
     if uploaded:
-        boonz("loading", "잠깐, 얘 얘기 좀 들어보고 있어...")
-        try:
-            files = {"file":(uploaded.name, uploaded.getvalue(), uploaded.type)}
-            resp  = requests.post(f"{FASTAPI_URL}/diagnose", files=files, data={"nickname":nickname}, timeout=60)
-            result= resp.json()
+        file_id = f"{uploaded.name}_{uploaded.size}"
+        is_new_file = st.session_state.get("_diag_file_id") != file_id
 
-            # 이미지 표시
-            col1, col2 = st.columns(2)
-            with col1:
-                st.image(uploaded, caption="원본", use_container_width=True)
-            with col2:
-                overlay = result.get("overlay_image") or result.get("lesion",{}).get("overlay_base64","")
-                if overlay and (diag_mode == "SAM 분석"):
-                    st.image(base64.b64decode(overlay), caption="SAM 분석", use_container_width=True)
-                else:
-                    st.markdown(
-                        '<div style="background:#F7F5F0;border-radius:14px;height:140px;'
-                        'display:flex;align-items:center;justify-content:center;'
-                        'font-size:12px;color:#B4B2A9;">SAM 분석 탭을 선택하면 보여줄게</div>',
-                        unsafe_allow_html=True,
+        if is_new_file:
+            # 새 파일 → "분석하기" 버튼 표시, 이전 결과 초기화
+            st.session_state._diag_file_id = file_id
+            st.session_state._diag_result = None
+            st.session_state.pop("_diag_analyzed", None)
+
+        col_img, _ = st.columns([3, 1])
+        with col_img:
+            st.image(uploaded, caption="원본", use_container_width=True)
+
+        # 아직 분석 안 한 상태 → "분석하기" 버튼
+        if not st.session_state.get("_diag_analyzed"):
+            if st.button("🔍 분석하기", key="btn_analyze", use_container_width=True):
+                st.session_state._diag_analyzed = True
+                boonz("loading", "잠깐, 얘 얘기 좀 들어보고 있어...")
+                try:
+                    files = {"file": (uploaded.name, uploaded.getvalue(), uploaded.type)}
+                    resp = requests.post(
+                        f"{FASTAPI_URL}/diagnose",
+                        files=files,
+                        data={"nickname": nickname},
+                        timeout=60,
                     )
+                    st.session_state._diag_result = resp.json()
+                except Exception as e:
+                    st.session_state._diag_analyzed = False
+                    boonz("worried", "앗 나 잠깐 버그남. 근데 괜찮아, 다시 해볼게")
+                    st.caption(str(e))
+                st.rerun()
+
+        # 분석 결과 표시
+        result = st.session_state.get("_diag_result")
+        if result:
+            # SAM 오버레이
+            overlay = result.get("overlay_image") or result.get("lesion", {}).get("overlay_base64", "")
+            if overlay and diag_mode == "SAM 분석":
+                st.image(base64.b64decode(overlay), caption="SAM 분석", use_container_width=True)
 
             # 결과 카드
-            disease    = result.get("disease",{})
-            lesion     = result.get("lesion",{})
-            species_i  = result.get("species",{})
-            ratio      = lesion.get("ratio",0) * 100
-            disease_kr = DISEASE_KOREAN.get(disease.get("name",""), disease.get("korean", disease.get("name","")))
+            disease   = result.get("disease", {})
+            lesion    = result.get("lesion", {})
+            species_i = result.get("species", {})
+            ratio     = lesion.get("ratio", 0) * 100
+            disease_kr = DISEASE_KOREAN.get(disease.get("name", ""), disease.get("korean", disease.get("name", "")))
 
-            if ratio <= 5:   sev_text, sev_color = "건강해 보여", "#A89070"
+            if ratio <= 5:    sev_text, sev_color = "건강해 보여", "#A89070"
             elif ratio <= 10: sev_text, sev_color = "아직 초기야. 지금 잡으면 돼", "#A89070"
             elif ratio <= 25: sev_text, sev_color = "중기야. 관심이 필요해", "#EF9F27"
             else:             sev_text, sev_color = "후기야. 적극적인 케어 필요", "#E24B4A"
@@ -707,12 +740,11 @@ with tab_diag:
                 unsafe_allow_html=True,
             )
 
-            # 분즈
-            b = result.get("boonz",{})
-            boonz(b.get("mood","worried"), b.get("message", f"{nickname}한테 물어봤는데, 좀 힘들다고 해. 같이 돌보자"))
+            b = result.get("boonz", {})
+            boonz(b.get("mood", "worried"), b.get("message", f"{nickname}한테 물어봤는데, 좀 힘들다고 해. 같이 돌보자"))
 
-            # 케어 가이드 버튼 + 텍스트
-            care = result.get("care_guide",{})
+            # 케어 가이드
+            care = result.get("care_guide", {})
             if care.get("text"):
                 if "show_guide" not in st.session_state:
                     st.session_state.show_guide = False
@@ -730,22 +762,27 @@ with tab_diag:
             if care.get("audio_url"):
                 st.audio(care["audio_url"])
 
-            # 진단 저장
-            st.session_state.last_diagnosis = {"disease":disease.get("name",""), "lesion":lesion.get("ratio",0)}
+            # 진단 저장 (최초 1회)
+            st.session_state.last_diagnosis = {"disease": disease.get("name", ""), "lesion": lesion.get("ratio", 0)}
             if species_i.get("name"):
                 update_species(nickname, species_i["name"])
+
+            # 다시 분석 버튼 (명시적 재호출)
+            if st.button("🔄 다시 분석", key="btn_reanalyze", use_container_width=False):
+                st.session_state._diag_analyzed = False
+                st.session_state._diag_result = None
+                st.rerun()
 
             divider()
             sec_title(f"{nickname}한테 뭐 해줄 거야?")
             care_grid("d", nickname)
 
-            # 진단 관련 질문
+            # 진단 관련 질문 — form 방식으로 엔터/submit 시만 호출
             divider()
             st.markdown(
                 f'<div style="font-size:16px;font-weight:700;color:#2C2C2A;margin:8px 0 10px;">진단 관련 질문</div>',
                 unsafe_allow_html=True,
             )
-            # 현재 진단 컨텍스트 칩
             st.markdown(
                 f'<div style="display:inline-block;background:#EDE5D8;border-radius:20px;'
                 f'padding:4px 12px;font-size:11px;color:#888780;margin-bottom:8px;">'
@@ -767,28 +804,29 @@ with tab_diag:
                 else:
                     boonz("happy", msg["content"])
 
-            diag_q = st.text_input(
-                "질문", placeholder=f"예: 이 병이 다른 잎으로 번져?",
-                key="q_diag", label_visibility="collapsed",
-            )
-            if diag_q:
-                st.session_state.diag_chat.append({"role":"user","content":diag_q})
+            # form: submit 클릭 시 1회만 호출
+            with st.form("form_diag_q", clear_on_submit=True):
+                diag_q = st.text_input(
+                    "질문", placeholder="예: 이 병이 다른 잎으로 번져?",
+                    label_visibility="collapsed",
+                )
+                submitted_diag = st.form_submit_button("보내기", use_container_width=True)
+
+            if submitted_diag and diag_q:
+                st.session_state.diag_chat.append({"role": "user", "content": diag_q})
                 diag_ctx = f"현재 {nickname}: {disease_kr}, 병변 {ratio:.1f}%"
                 try:
                     resp2 = requests.post(
                         f"{FASTAPI_URL}/consult/text",
-                        data={"question":diag_q,"nickname":nickname,"diagnosis_context":diag_ctx},
+                        data={"question": diag_q, "nickname": nickname, "diagnosis_context": diag_ctx},
                         timeout=30,
                     )
-                    ans = resp2.json().get("boonz",{}).get("message","") or resp2.json().get("answer",{}).get("text","")
+                    ans = resp2.json().get("boonz", {}).get("message", "") or resp2.json().get("answer", {}).get("text", "")
                 except Exception:
                     ans = "앗 나 잠깐 버그남. 근데 괜찮아, 다시 해볼게"
-                st.session_state.diag_chat.append({"role":"boonz","content":ans})
+                if not st.session_state.diag_chat or st.session_state.diag_chat[-1].get("content") != ans:
+                    st.session_state.diag_chat.append({"role": "boonz", "content": ans})
                 st.rerun()
-
-        except Exception as e:
-            boonz("worried", "앗 나 잠깐 버그남. 근데 괜찮아, 다시 해볼게")
-            st.caption(str(e))
 
 # ══════════════════════════════
 # 탭 이력

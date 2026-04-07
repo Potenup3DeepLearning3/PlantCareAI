@@ -1,44 +1,83 @@
-{"date": "2026-03-10 14:35", "plant": "마리", "action": "prune"}
-{"date": "2026-03-10 21:23", "plant": "마리", "action": "observe"}
-{"date": "2026-03-11 12:31", "plant": "마리", "action": "water"}
-{"date": "2026-03-11 18:30", "plant": "마리", "action": "observe"}
-{"date": "2026-03-12 09:58", "plant": "마리", "action": "medicine"}
-{"date": "2026-03-13 12:52", "plant": "마리", "action": "observe"}
-{"date": "2026-03-13 22:33", "plant": "마리", "action": "observe"}
-{"date": "2026-03-14 07:31", "plant": "마리", "action": "water", "disease": "Late_Blight", "lesion": 0.12}
-{"date": "2026-03-14 17:19", "plant": "마리", "action": "observe"}
-{"date": "2026-03-16 21:56", "plant": "마리", "action": "prune"}
-{"date": "2026-03-17 21:28", "plant": "마리", "action": "water"}
-{"date": "2026-03-18 09:19", "plant": "마리", "action": "medicine"}
-{"date": "2026-03-18 19:59", "plant": "마리", "action": "water"}
-{"date": "2026-03-19 07:28", "plant": "마리", "action": "medicine"}
-{"date": "2026-03-19 08:37", "plant": "마리", "action": "observe"}
-{"date": "2026-03-20 17:51", "plant": "마리", "action": "water"}
-{"date": "2026-03-20 20:15", "plant": "마리", "action": "diagnose", "disease": "late_blight", "lesion": 0.08}
-{"date": "2026-03-21 13:03", "plant": "마리", "action": "move"}
-{"date": "2026-03-22 14:19", "plant": "마리", "action": "medicine"}
-{"date": "2026-03-22 17:56", "plant": "마리", "action": "water"}
-{"date": "2026-03-23 22:45", "plant": "마리", "action": "water"}
-{"date": "2026-03-24 08:48", "plant": "마리", "action": "clean"}
-{"date": "2026-03-24 20:01", "plant": "마리", "action": "water"}
-{"date": "2026-03-26 20:36", "plant": "마리", "action": "water"}
-{"date": "2026-03-27 19:35", "plant": "마리", "action": "water"}
-{"date": "2026-03-27 21:30", "plant": "마리", "action": "diagnose", "disease": "late_blight", "lesion": 0.05}
-{"date": "2026-03-27 21:51", "plant": "마리", "action": "water"}
-{"date": "2026-03-28 07:35", "plant": "마리", "action": "medicine"}
-{"date": "2026-03-28 13:22", "plant": "마리", "action": "observe"}
-{"date": "2026-03-29 10:31", "plant": "마리", "action": "clean"}
-{"date": "2026-03-29 19:11", "plant": "마리", "action": "move"}
-{"date": "2026-03-30 22:18", "plant": "마리", "action": "clean"}
-{"date": "2026-03-31 21:44", "plant": "마리", "action": "observe"}
-{"date": "2026-04-01 13:31", "plant": "마리", "action": "repot"}
-{"date": "2026-04-01 13:41", "plant": "마리", "action": "prune"}
-{"date": "2026-04-02 14:27", "plant": "마리", "action": "observe"}
-{"date": "2026-04-03 20:14", "plant": "마리", "action": "water"}
-{"date": "2026-04-04 10:47", "plant": "마리", "action": "water", "disease": "Late_Blight", "lesion": 0.02}
-{"date": "2026-04-05 16:29", "plant": "마리", "action": "water"}
-{"date": "2026-04-05 16:33", "plant": "마리", "action": "water"}
-{"date": "2026-04-06 11:55", "plant": "리아", "action": "water", "disease": "", "lesion": 0}
-{"date": "2026-04-06 11:55", "plant": "리아", "action": "prune", "disease": "", "lesion": 0}
-{"date": "2026-04-06 11:55", "plant": "리아", "action": "clean", "disease": "", "lesion": 0}
-{"date": "2026-04-06 13:34", "plant": "리아", "action": "🍃 잎닦음"}
+{"date": "2026-04-02", "time": "11:30", "plant": "마리", "action": "water"}
+{"date": "2026-04-02", "time": "11:30", "plant": "마리", "action": "wipe"}
+{"date": "2026-04-02", "time": "11:30", "plant": "마리", "action": "prune"}
+{"date": "2026-04-02", "time": "11:30", "plant": "마리", "action": "medicine"}
+{"date": "2026-04-02", "time": "11:30", "plant": "마리", "action": "check"}
+{"date": "2026-04-02 14:04", "plant": "마리", "action": "move"}
+{"date": "2026-04-02 14:04", "plant": "마리", "action": "prune"}
+{"date": "2026-04-02 14:04", "plant": "마리", "action": "medicine"}
+{"date": "2026-04-02 14:04", "plant": "마리", "action": "repot"}
+{"date": "2026-04-02 14:04", "plant": "마리", "action": "move"}
+{"date": "2026-04-02 14:04", "plant": "마리", "action": "prune"}
+{"date": "2026-04-02 14:05", "plant": "마리", "action": "repot"}
+{"date": "2026-04-02 14:05", "plant": "마리", "action": "water"}
+{"date": "2026-03-07 09:00", "plant": "마리", "action": "water", "disease": "Powdery_Mildew", "lesion": 0.15}
+{"date": "2026-03-08 09:00", "plant": "마리", "action": "observe"}
+{"date": "2026-03-09 09:00", "plant": "마리", "action": "water"}
+{"date": "2026-03-09 09:00", "plant": "마리", "action": "clean"}
+{"date": "2026-03-10 09:00", "plant": "마리", "action": "observe"}
+{"date": "2026-03-11 09:00", "plant": "마리", "action": "medicine"}
+{"date": "2026-03-12 09:00", "plant": "마리", "action": "water", "disease": "Powdery_Mildew", "lesion": 0.12}
+{"date": "2026-03-13 09:00", "plant": "마리", "action": "observe"}
+{"date": "2026-03-14 09:00", "plant": "마리", "action": "water"}
+{"date": "2026-03-15 09:00", "plant": "마리", "action": "observe"}
+{"date": "2026-03-16 09:00", "plant": "마리", "action": "water"}
+{"date": "2026-03-16 09:00", "plant": "마리", "action": "clean"}
+{"date": "2026-03-17 09:00", "plant": "마리", "action": "observe", "disease": "Powdery_Mildew", "lesion": 0.08}
+{"date": "2026-03-18 09:00", "plant": "마리", "action": "medicine"}
+{"date": "2026-03-19 09:00", "plant": "마리", "action": "water"}
+{"date": "2026-03-20 09:00", "plant": "마리", "action": "observe"}
+{"date": "2026-03-21 09:00", "plant": "마리", "action": "water"}
+{"date": "2026-03-22 09:00", "plant": "마리", "action": "observe", "disease": "Powdery_Mildew", "lesion": 0.08}
+{"date": "2026-03-23 09:00", "plant": "마리", "action": "water"}
+{"date": "2026-03-23 09:00", "plant": "마리", "action": "clean"}
+{"date": "2026-03-24 09:00", "plant": "마리", "action": "observe"}
+{"date": "2026-03-25 09:00", "plant": "마리", "action": "medicine"}
+{"date": "2026-03-26 09:00", "plant": "마리", "action": "water"}
+{"date": "2026-03-27 09:00", "plant": "마리", "action": "observe", "disease": "Powdery_Mildew", "lesion": 0.05}
+{"date": "2026-03-28 09:00", "plant": "마리", "action": "water"}
+{"date": "2026-03-29 09:00", "plant": "마리", "action": "observe"}
+{"date": "2026-03-30 09:00", "plant": "마리", "action": "water"}
+{"date": "2026-03-30 09:00", "plant": "마리", "action": "clean"}
+{"date": "2026-03-31 09:00", "plant": "마리", "action": "observe"}
+{"date": "2026-04-01 09:00", "plant": "마리", "action": "medicine", "disease": "Powdery_Mildew", "lesion": 0.02}
+{"date": "2026-04-03 09:00", "plant": "마리", "action": "observe"}
+{"date": "2026-04-04 09:00", "plant": "마리", "action": "water"}
+{"date": "2026-04-05 09:00", "plant": "마리", "action": "observe"}
+{"date": "2026-04-07 15:03", "plant": "마리", "action": "water"}
+{"date": "2026-04-07 15:03", "plant": "마리", "action": "prune"}
+{"date": "2026-04-07 15:03", "plant": "마리", "action": "repot"}
+{"date": "2026-04-07 15:04", "plant": "마리", "action": "move"}
+{"date": "2026-04-07 15:04", "plant": "마리", "action": "clean"}
+{"date": "2026-04-07 15:04", "plant": "마리", "action": "move"}
+{"date": "2026-04-07 15:04", "plant": "마리", "action": "observe"}
+{"date": "2026-04-07 15:04", "plant": "마리", "action": "move"}
+{"date": "2026-04-07 15:04", "plant": "마리", "action": "repot"}
+{"date": "2026-04-07 15:05", "plant": "마리", "action": "repot", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-06 09:00", "plant": "마리", "action": "observe"}
+{"date": "2026-04-07 15:09", "plant": "초록", "action": "water"}
+{"date": "2026-04-07 15:09", "plant": "초록", "action": "move"}
+{"date": "2026-04-07 15:09", "plant": "초록", "action": "observe"}
+{"date": "2026-04-07 15:09", "plant": "초록", "action": "prune"}
+{"date": "2026-04-07 15:09", "plant": "초록", "action": "medicine"}
+{"date": "2026-04-07 15:09", "plant": "초록", "action": "repot"}
+{"date": "2026-04-07 15:31", "plant": "초록", "action": "prune", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-07 15:45", "plant": "흰둥이", "action": "water"}
+{"date": "2026-04-07 15:45", "plant": "흰둥이", "action": "prune"}
+{"date": "2026-04-07 15:45", "plant": "흰둥이", "action": "clean"}
+{"date": "2026-04-07 15:45", "plant": "흰둥이", "action": "observe"}
+{"date": "2026-04-07 15:45", "plant": "흰둥이", "action": "medicine"}
+{"date": "2026-04-07 15:48", "plant": "흰둥이", "action": "prune"}
+{"date": "2026-04-07 16:18", "plant": "개나리", "action": "water"}
+{"date": "2026-04-07 16:18", "plant": "개나리", "action": "prune"}
+{"date": "2026-04-07 16:18", "plant": "개나리", "action": "clean"}
+{"date": "2026-04-07 16:20", "plant": "개나리", "action": "water", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-07 16:20", "plant": "개나리", "action": "clean", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-07 16:20", "plant": "개나리", "action": "prune", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-07 16:20", "plant": "개나리", "action": "medicine", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-07 16:20", "plant": "개나리", "action": "observe", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-07 16:35", "plant": "마리", "action": "water"}
+{"date": "2026-04-07 16:35", "plant": "마리", "action": "prune"}
+{"date": "2026-04-07 16:35", "plant": "마리", "action": "observe"}
+{"date": "2026-04-07 16:35", "plant": "마리", "action": "repot"}
+{"date": "2026-04-07 16:36", "plant": "마리", "action": "water"}

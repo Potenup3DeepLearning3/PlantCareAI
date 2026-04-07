@@ -286,10 +286,24 @@ def _detect_lesion_by_color(image_rgb: np.ndarray, leaf_mask: np.ndarray) -> np.
     return lesion_color
 
 
+_SAM_MAX_SIZE = 640  # SAM 입력 최대 크기 (px). 클수록 임베딩 시간 증가
+
+
 def segment_lesion(
     predictor, image_rgb: np.ndarray, point_coords: np.ndarray | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     """SAM 2단계 세그멘테이션. (병변 마스크, 잎 마스크) 반환."""
+    orig_h, orig_w = image_rgb.shape[:2]
+
+    # 입력 이미지를 SAM_MAX_SIZE 이하로 리사이즈 → 임베딩 속도 향상
+    scale = min(_SAM_MAX_SIZE / max(orig_h, orig_w), 1.0)
+    if scale < 1.0:
+        new_w = int(orig_w * scale)
+        new_h = int(orig_h * scale)
+        image_rgb = cv2.resize(image_rgb, (new_w, new_h), interpolation=cv2.INTER_AREA)
+        if point_coords is not None:
+            point_coords = (point_coords * scale).astype(int)
+
     predictor.set_image(image_rgb)
     h, w = image_rgb.shape[:2]
 
