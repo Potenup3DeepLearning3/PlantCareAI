@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a1a;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Noto Sans KR',system-ui,sans-serif}
+.phone{width:360px;background:#2C2C2A;border-radius:40px;padding:12px;box-shadow:0 12px 48px rgba(0,0,0,0.4)}
+.inner{background:#F7F5F0;border-radius:30px;overflow:hidden;min-height:700px;position:relative;padding-bottom:60px}
+.notch{width:110px;height:8px;background:#2C2C2A;border-radius:4px;margin:10px auto 16px}
+.p{padding:18px 22px}
+.section{font-size:18px;font-weight:700;color:#2C2C2A;margin:12px 0 10px}
+.avatar{width:38px;height:38px;background:#EAF3DE;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.bubble{background:#fff;border:0.5px solid #E5E0D5;border-radius:14px 14px 14px 4px;padding:11px 15px;font-size:13.5px;color:#2C2C2A;flex:1;margin-left:10px;line-height:1.6}
+.bname{font-size:10px;color:#3B6D11;font-weight:600;margin-bottom:3px}
+.chat{display:flex;align-items:flex-start;margin:12px 0}
+.recovery{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin:14px 0;padding:8px 0}
+.rleaf{display:flex;flex-direction:column;align-items:center;font-size:10px;color:#888780;line-height:1.4}
+.ricon{font-size:24px;margin-bottom:4px}
+.rarrow{font-size:14px;color:#E5E0D5;align-self:center}
+.divider{border:none;border-top:0.5px solid #E5E0D5;margin:14px 0}
+.diary-title{font-size:16px;font-weight:600;color:#2C2C2A;margin:12px 0 10px}
+.tl-item{display:flex;gap:10px;margin:6px 0;align-items:flex-start}
+.tl-dot{width:10px;height:10px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.tl-line{width:1.5px;background:#E5E0D5;margin:0 4.25px;height:20px}
+.tl-text{font-size:12px;color:#2C2C2A;line-height:1.5}
+.tl-date{font-size:10px;color:#B4B2A9}
+.tl-comment{font-size:10px;color:#3B6D11}
+.more{font-size:11px;color:#3B6D11;text-align:center;margin:8px 0;cursor:pointer}
+.bnav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:0.5px solid #E5E0D5;display:flex;justify-content:space-around;padding:12px 0 10px;font-size:10px}
+.ni{text-align:center;color:#B4B2A9}.na{text-align:center;color:#3B6D11;font-weight:600}
+</style></head><body>
+<div class="phone"><div class="inner">
+<div class="notch"></div>
+<div class="p">
+<div class="section">마리와의 이야기</div>
+<div class="recovery">
+<div class="rleaf"><div class="ricon">🥀</div>3/25<br>15%</div>
+<div class="rarrow">→</div>
+<div class="rleaf"><div class="ricon">🌱</div>4/01<br>12%</div>
+<div class="rarrow">→</div>
+<div class="rleaf"><div class="ricon">🌿</div>4/07<br>8%</div>
+<div class="rarrow">→</div>
+<div class="rleaf"><div class="ricon">🪴</div>4/14<br>5%</div>
+<div class="rarrow">→</div>
+<div class="rleaf"><div class="ricon" style="font-size:28px">🌳</div>4/20<br>2%</div>
+</div>
+<div class="chat"><div class="avatar">😊</div><div class="bubble"><div class="bname">분즈</div>봐봐, 마리 너랑 있으면서 점점 좋아지고 있어. 너가 잘 돌봐준 거야</div></div>
+<hr class="divider">
+<div class="diary-title">돌봄 일기</div>
+<div class="tl-item">
+<div class="tl-dot" style="background:#3B6D11"></div>
+<div><div class="tl-text">😊 그냥 봄 — <span style="color:#3B6D11">병변 5% ↓</span></div><div class="tl-date">4월 14일</div><div class="tl-comment">마리가 많이 나아졌대</div></div>
+</div>
+<div style="margin-left:4.25px"><div class="tl-line"></div></div>
+<div class="tl-item">
+<div class="tl-dot" style="background:#3B6D11"></div>
+<div><div class="tl-text">💧 물줬음</div><div class="tl-date">4월 13일</div></div>
+</div>
+<div style="margin-left:4.25px"><div class="tl-line"></div></div>
+<div class="tl-item">
+<div class="tl-dot" style="background:#EF9F27"></div>
+<div><div class="tl-text">💊 약줬음</div><div class="tl-date">4월 12일</div><div class="tl-comment">힘내자 마리</div></div>
+</div>
+<div style="margin-left:4.25px"><div class="tl-line"></div></div>
+<div class="tl-item">
+<div class="tl-dot" style="background:#3B6D11"></div>
+<div><div class="tl-text">📷 진단 — <span style="color:#3B6D11">병변 8% ↓</span></div><div class="tl-date">4월 7일</div><div class="tl-comment">좋아지고 있어!</div></div>
+</div>
+<div style="margin-left:4.25px"><div class="tl-line"></div></div>
+<div class="tl-item">
+<div class="tl-dot" style="background:#3B6D11"></div>
+<div><div class="tl-text">💧 물줬음</div><div class="tl-date">4월 6일</div></div>
+</div>
+<div class="more">이전 기록 더보기 ↓</div>
+</div>
+<div class="bnav"><div class="ni">🏠 홈</div><div class="ni">📷 진단</div><div class="ni">🎙️ 상담</div><div class="na">📊 이력</div></div>
+</div></div>
+</body></html>

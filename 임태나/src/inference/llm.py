@@ -11,9 +11,8 @@ from loguru import logger
 from src.config import OLLAMA_BASE_URL, OLLAMA_MODEL
 
 TIMEOUT = 60
-_GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "") or os.getenv("GOOGLE_API_KEY", "")
-_GEMINI_MODEL   = "gemma-3-27b-it"
-_GEMINI_URL     = f"https://generativelanguage.googleapis.com/v1beta/models/{_GEMINI_MODEL}:generateContent"
+_OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+_OPENAI_MODEL   = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
 # ── 프롬프트 템플릿 v2 ───────────────────────────────────────────
 
@@ -231,27 +230,28 @@ def get_prompt(prompt_type: str, **kwargs) -> str:
 
 
 def _call_llm(prompt: str) -> str:
-    """Google AI Studio(Gemini) 우선, 실패 시 Ollama 폴백."""
-    # 1순위: Google AI Studio (gemma-3-27b-it)
-    if _GEMINI_API_KEY:
+    """OpenAI API 우선, 실패 시 Ollama 폴백."""
+    # 1순위: OpenAI API
+    if _OPENAI_API_KEY:
         try:
-            resp = requests.post(
-                _GEMINI_URL,
-                params={"key": _GEMINI_API_KEY},
-                json={
-                    "contents": [{"parts": [{"text": prompt}]}],
-                    "generationConfig": {"temperature": 0.7, "maxOutputTokens": 1024},
-                    "systemInstruction": {"parts": [{"text": BOONZ_PERSONA}]},
-                },
+            from openai import OpenAI
+            client = OpenAI(api_key=_OPENAI_API_KEY)
+            resp = client.chat.completions.create(
+                model=_OPENAI_MODEL,
+                messages=[
+                    {"role": "system", "content": BOONZ_PERSONA},
+                    {"role": "user", "content": prompt},
+                ],
+                temperature=0.7,
+                max_tokens=512,
                 timeout=30,
             )
-            if resp.status_code == 200:
-                candidates = resp.json().get("candidates", [])
-                if candidates:
-                    return candidates[0]["content"]["parts"][0]["text"]
-            logger.warning(f"Gemini 응답 오류 {resp.status_code}: {resp.text[:200]}")
+            text = resp.choices[0].message.content or ""
+            if text:
+                return text
+            logger.warning("OpenAI 빈 응답, Ollama 폴백")
         except Exception as e:
-            logger.warning(f"Gemini 실패, Ollama 폴백: {e}")
+            logger.warning(f"OpenAI 실패, Ollama 폴백: {e}")
 
     # 2순위: Ollama 로컬 (오프라인 가능)
     try:
@@ -262,7 +262,7 @@ def _call_llm(prompt: str) -> str:
                 "system": "반드시 한국어로만 답해. 중국어, 영어, 일본어 절대 쓰지 마. 반말로. 짧게.",
                 "prompt": prompt,
                 "stream": False,
-                "options": {"temperature": 0.7, "num_predict": 1024},
+                "options": {"temperature": 0.7, "num_predict": 512},
             },
             timeout=TIMEOUT,
         )

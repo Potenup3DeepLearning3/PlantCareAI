@@ -91,22 +91,20 @@ async def text_consult(
     nickname: str = Form(""),
     diagnosis_context: str = Form(""),
 ) -> ConsultResponse:
-    """텍스트 상담: LLM → TTS."""
+    """텍스트 상담: LLM 응답 (TTS 없음)."""
     name = nickname or "식물"
     start = time.perf_counter()
 
     response_text = respond_to_voice(
         question, plant_nickname=name, current_diagnosis=diagnosis_context,
     )
-    audio_path = text_to_speech(response_text)
-    audio_url = get_audio_url(audio_path)
 
     elapsed_ms = (time.perf_counter() - start) * 1000
 
     return ConsultResponse(
         transcript="",
         question=question,
-        answer=ConsultAnswerResponse(text=response_text, audio_url=audio_url),
+        answer=ConsultAnswerResponse(text=response_text, audio_url=""),
         boonz=BoonzResponse(mood="happy", message=_boonz_msg(name, response_text)),
         suggested_action=_suggest_action(question),
         processing_time_ms=round(elapsed_ms, 1),

@@ -1,4 +1,31 @@
-# UI 목업 매칭 결과 (2026-04-06 최종)
+# PlantCare AI — Phase 검증 결과 (2026-04-07 재검증)
+
+## GUIDE_master.md Phase 1~8 완료 현황
+
+| Phase | 내용 | 상태 | 비고 |
+|-------|------|------|------|
+| 1 | 서버 기동 + 모델 로드 | ✅ | FastAPI:8000, Streamlit:8501, /diagnose 정상 응답 |
+| 2 | 자기돌봄 미러링 7개 | ✅ | get_streak/last_care/boonz_mood 등 모두 구현 |
+| 3 | 관계도 calculate_relationship() | ✅ | 함수 추출 완료, score/level/next_milestone 반환 |
+| 4 | MCP/DB 연동 | ✅ | plant_care.db diseases:12 care_tips:34 행 확인 |
+| 5 | CLIP 폴백 | ✅ | confidence<0.7 시 자동 전환 구현됨 |
+| 6 | 이력 탭 | ✅ | 진단이력/타임라인/케어로그 차트 구현 |
+| 7 | LLM OpenAI→Ollama | ✅ | gpt-4o-mini 우선, qwen2.5:7b 폴백 |
+| 8 | 모카 브라운 디자인 | ✅ | #3B6D11→#8B7355 전체 교체 (24곳) |
+
+## 핵심 수정 내역 (2026-04-07)
+- config.py: MODELS_DIR = PROJECT_ROOT / "models" (임태나/models/ 위치로 수정)
+- app.py: calculate_relationship() 함수 추출 (인라인 → 독립 함수)
+- app.py: 초록 색상 → 모카 브라운 전체 교체
+  - #3B6D11 → #8B7355 (primary)
+  - #EAF3DE → #E8DDD0 (light bg)
+  - #2B5A1D → #7A6347 (hover)
+  - #97C459 → #A89070 (secondary)
+  - #F0EDE6 → #EDE5D8 (segmented control bg)
+
+---
+
+# UI 목업 매칭 결과 (2026-04-06)
 
 ## 실행 환경
 - 프론트: C:/PlantCareAI/임태나/src/frontend/app.py → localhost:8501

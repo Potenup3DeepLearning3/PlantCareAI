@@ -35,7 +35,7 @@ hr,st-emotion-cache-ocqkz7{border-color:#E5E0D5!important}
     color:#B4B2A9!important;background:transparent!important;border:none!important;
     font-size:11px!important;padding:4px 14px!important;
     flex-direction:column!important;gap:2px!important;font-weight:400!important}
-.stTabs [aria-selected="true"]{color:#3B6D11!important;font-weight:600!important}
+.stTabs [aria-selected="true"]{color:#8B7355!important;font-weight:600!important}
 .stTabs [data-baseweb="tab-border"],.stTabs [data-baseweb="tab-highlight"]{display:none!important}
 
 /* ── 입력창 ── */
@@ -43,7 +43,7 @@ hr,st-emotion-cache-ocqkz7{border-color:#E5E0D5!important}
     background:white!important;border:1.5px solid #E5E0D5!important;
     border-radius:12px!important;color:#2C2C2A!important;font-size:13px!important}
 .stTextInput input::placeholder,.stTextArea textarea::placeholder{color:#B4B2A9!important}
-.stTextInput input:focus{border-color:#3B6D11!important;outline:none!important}
+.stTextInput input:focus{border-color:#8B7355!important;outline:none!important}
 
 /* ── 파일 업로더 ── */
 [data-testid="stFileUploader"]{
@@ -55,8 +55,8 @@ hr,st-emotion-cache-ocqkz7{border-color:#E5E0D5!important}
 [data-testid="stFileUploaderDropzone"]>div{background:white!important}
 [data-testid="stFileUploaderDropzone"] button{
     background:white!important;color:#2C2C2A!important;
-    border:1.5px solid #C3C8BB!important;border-radius:8px!important}
-[data-testid="stFileUploaderDropzone"] button:hover{background:#F0EDE6!important}
+    border:1.5px solid #C4B09A!important;border-radius:8px!important}
+[data-testid="stFileUploaderDropzone"] button:hover{background:#EDE5D8!important}
 
 /* ── 컬럼 가로 정렬 강제 (Streamlit 1.56 responsive fix) ── */
 div[data-testid="stHorizontalBlock"]{
@@ -73,14 +73,14 @@ div[data-testid="stHorizontalBlock"] .stButton>button{
     box-shadow:none!important;line-height:1.4!important;font-weight:400!important;
     width:100%!important}
 div[data-testid="stHorizontalBlock"] .stButton>button:hover{
-    background:#EAF3DE!important;border-color:#3B6D11!important}
+    background:#E8DDD0!important;border-color:#8B7355!important}
 
 /* ── 일반 버튼 (full-width green) ── */
 .stButton>button{
-    border-radius:20px!important;background:#3B6D11!important;
+    border-radius:20px!important;background:#8B7355!important;
     border:none!important;color:white!important;
     padding:10px 20px!important;font-size:13px!important;font-weight:500!important}
-.stButton>button:hover{background:#2B5A1D!important}
+.stButton>button:hover{background:#7A6347!important}
 
 /* ── segmented_control ── */
 div[data-testid="stElementContainer"]:has(div[data-testid="stButtonGroup"]),
@@ -88,7 +88,7 @@ div[class*="st-key-diag_mode"],div[class*="st-key-hist_sub"]{
     width:100%!important;display:block!important}
 div[data-testid="stButtonGroup"]{
     display:flex!important;width:100%!important;min-width:0!important;
-    background:#F0EDE6!important;border-radius:12px!important;
+    background:#EDE5D8!important;border-radius:12px!important;
     padding:3px!important;gap:3px!important;box-sizing:border-box!important}
 div[data-testid="stButtonGroup"]>div{flex:1 1 0%!important;min-width:0!important;max-width:none!important;width:0!important}
 button[data-testid="stBaseButton-segmented_control"]{
@@ -249,10 +249,14 @@ def load_care_log(nickname=None):
         return []
     logs = []
     for line in CARE_LOG_FILE.read_text(encoding="utf-8").strip().split("\n"):
-        if line:
+        if not line.strip():
+            continue
+        try:
             entry = json.loads(line)
             if nickname is None or entry.get("plant") == nickname:
                 logs.append(entry)
+        except json.JSONDecodeError:
+            continue
     return logs
 
 def save_care_log(nickname, action):
@@ -268,7 +272,7 @@ def save_care_log(nickname, action):
 def get_streak(care_logs):
     if not care_logs:
         return 0
-    dates = sorted(set(log["date"][:10] for log in care_logs))
+    dates = sorted(set(log.get("date","")[:10] for log in care_logs if log.get("date")))
     today = datetime.now().strftime("%Y-%m-%d")
     yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
     # 오늘 or 어제 기록이 없으면 streak 0
@@ -334,11 +338,11 @@ def boonz(mood, message):
     e = emojis.get(mood, "🌱")
     st.markdown(
         f'<div style="display:flex;align-items:flex-start;gap:10px;margin:8px 0 12px">'
-        f'<div style="width:38px;height:38px;background:#EAF3DE;border-radius:50%;'
+        f'<div style="width:38px;height:38px;background:#E8DDD0;border-radius:50%;'
         f'display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;">{e}</div>'
         f'<div style="background:white;border:0.5px solid #E5E0D5;border-radius:14px 14px 14px 4px;'
         f'padding:11px 15px;font-size:13.5px;color:#2C2C2A;flex:1;line-height:1.6;">'
-        f'<div style="font-size:10px;color:#3B6D11;font-weight:600;margin-bottom:3px;">분즈</div>'
+        f'<div style="font-size:10px;color:#8B7355;font-weight:600;margin-bottom:3px;">분즈</div>'
         f'{message}</div></div>',
         unsafe_allow_html=True,
     )
@@ -366,13 +370,13 @@ def care_grid(key_prefix, nickname, show_response=True):
 def plant_card(nickname, days, status_emoji, status_text, status_desc, species_text, meter_count):
     meter = ""
     for i in range(4):
-        color = "#3B6D11" if i < meter_count else "#E5E0D5"
+        color = "#8B7355" if i < meter_count else "#E5E0D5"
         meter += f'<div style="width:18px;height:5px;border-radius:3px;background:{color};display:inline-block;margin:0 2px;"></div>'
     st.markdown(
-        f'<div style="background:linear-gradient(135deg,#EAF3DE,#FFF9E6);border-radius:20px;'
+        f'<div style="background:linear-gradient(135deg,#E8DDD0,#FAF6F0);border-radius:20px;'
         f'padding:20px;margin:12px 0;text-align:center;">'
         f'<div style="font-size:36px;margin:4px 0;">{status_emoji}</div>'
-        f'<div style="font-size:18px;font-weight:700;color:#3B6D11;">{status_text}</div>'
+        f'<div style="font-size:18px;font-weight:700;color:#8B7355;">{status_text}</div>'
         f'<div style="font-size:12px;color:#888780;margin:3px 0;">{nickname} · {species_text} · {days}일째</div>'
         f'<div style="margin:8px 0;">{meter}</div>'
         f'<div style="font-size:12px;color:#2C2C2A;font-style:italic;">"{status_desc}"</div>'
@@ -382,6 +386,39 @@ def plant_card(nickname, days, status_emoji, status_text, status_desc, species_t
 
 def divider():
     st.markdown('<hr style="border:none;border-top:0.5px solid #E5E0D5;margin:14px 0;">', unsafe_allow_html=True)
+
+def calculate_relationship(days: int, total_logs: int, nickname: str = "") -> dict:
+    """돌봄 일수와 기록 수로 관계 단계를 계산한다.
+
+    Returns: {"score": int, "level": str, "level_emoji": str,
+               "level_desc": str, "next_milestone": str, "meter_count": int}
+    """
+    score = min(days + total_logs * 2, 100)
+    if days <= 7:
+        level, emoji = "새로운 만남", "🌱"
+        desc = "서로 알아가는 중이야. 자주 들러줘"
+        next_milestone = "8일째가 되면 '알아가는 중' 단계로 올라가"
+    elif days <= 30:
+        level, emoji = "알아가는 중", "🌿"
+        desc = "돌봄이 습관이 되고 있어. 좋은 신호야"
+        next_milestone = "31일째가 되면 '함께하는 사이' 단계로 올라가"
+    elif days <= 90:
+        level, emoji = "함께하는 사이", "🪴"
+        desc = f"{nickname}가 너의 하루 일부가 됐네" if nickname else "돌봄이 일상이 됐네"
+        next_milestone = "91일째가 되면 '오랜 친구' 단계로 올라가"
+    else:
+        level, emoji = "오랜 친구", "🌳"
+        desc = f"이쯤 되면 {nickname}가 너를 돌보는 거야" if nickname else "이제 함께 오래됐어"
+        next_milestone = "최고 단계야. 계속 함께해줘"
+    return {
+        "score": score,
+        "level": level,
+        "level_emoji": emoji,
+        "level_desc": desc,
+        "next_milestone": next_milestone,
+        "meter_count": min(days // 23, 4),
+    }
+
 
 def sec_title(text):
     st.markdown(f'<div style="font-size:14px;font-weight:600;color:#2C2C2A;margin:4px 0 10px;">{text}</div>', unsafe_allow_html=True)
@@ -422,16 +459,11 @@ streak    = get_streak(care_logs)
 total_logs= len(care_logs)
 
 # 관계 단계
-if days <= 7:
-    s_em, s_text, s_desc = "🌱", "새로운 만남", "서로 알아가는 중이야. 자주 들러줘"
-elif days <= 30:
-    s_em, s_text, s_desc = "🌿", "알아가는 중", "돌봄이 습관이 되고 있어. 좋은 신호야"
-elif days <= 90:
-    s_em, s_text, s_desc = "🪴", "함께하는 사이", f"{nickname}가 너의 하루 일부가 됐네"
-else:
-    s_em, s_text, s_desc = "🌳", "오랜 친구", f"이쯤 되면 {nickname}가 너를 돌보는 거야"
-
-meter_count = min(days // 23, 4)
+_rel      = calculate_relationship(days, total_logs, nickname)
+s_em      = _rel["level_emoji"]
+s_text    = _rel["level"]
+s_desc    = _rel["level_desc"]
+meter_count = _rel["meter_count"]
 species_text = current.get("species","") or "종을 알아보려면 진단 탭에서 사진을 찍어줘"
 
 # 동적 타이틀 (시간별)
@@ -509,7 +541,7 @@ with tab_home:
     if streak >= 1:
         st.markdown(
             f'<div style="margin:4px 0;">'
-            f'<span style="display:inline-block;background:#3B6D11;color:white;border-radius:20px;'
+            f'<span style="display:inline-block;background:#8B7355;color:white;border-radius:20px;'
             f'padding:5px 14px;font-size:11px;">🔥 {streak}일 연속 돌봄</span>'
             f'<span style="font-size:11px;color:#888780;margin-left:8px;">기록 {total_logs}개</span>'
             f'</div>',
@@ -525,7 +557,7 @@ with tab_home:
             f'<div style="font-size:22px;font-weight:700;color:#2C2C2A;">{streak}</div>'
             f'<div style="font-size:9px;color:#888780;margin-top:2px;">연속 돌봄</div></div>'
             f'<div style="flex:1;background:white;border-radius:14px;padding:12px 6px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);">'
-            f'<div style="font-size:22px;font-weight:700;color:#3B6D11;">{lesion_change}</div>'
+            f'<div style="font-size:22px;font-weight:700;color:#8B7355;">{lesion_change}</div>'
             f'<div style="font-size:9px;color:#888780;margin-top:2px;">병변 변화</div></div>'
             f'</div>',
             unsafe_allow_html=True,
@@ -534,8 +566,8 @@ with tab_home:
     # Day 1 넛지 카드 (첫 기록 없을 때)
     if total_logs == 0 and days <= 1:
         st.markdown(
-            f'<div style="background:#FFF9E6;border-radius:14px;padding:12px 16px;margin:8px 0;">'
-            f'<div style="font-size:11px;color:#3B6D11;font-weight:600;margin-bottom:3px;">💡 첫 날이니까</div>'
+            f'<div style="background:#FAF6F0;border-radius:14px;padding:12px 16px;margin:8px 0;">'
+            f'<div style="font-size:11px;color:#8B7355;font-weight:600;margin-bottom:3px;">💡 첫 날이니까</div>'
             f'<div style="font-size:12px;color:#2C2C2A;line-height:1.6;">'
             f'오늘은 😊 그냥봄 해줘. 그것만으로도 시작이야.<br>'
             f'내일 다시 오면 연속 돌봄 시작이야. 기대된다 🌱</div>'
@@ -546,7 +578,7 @@ with tab_home:
     # 이정표
     if total_logs in MILESTONES:
         st.markdown(
-            f'<div style="background:#FFF9E6;border-radius:14px;padding:10px 16px;margin:8px 0;'
+            f'<div style="background:#FAF6F0;border-radius:14px;padding:10px 16px;margin:8px 0;'
             f'text-align:center;font-size:12px;color:#2C2C2A;">🎉 {MILESTONES[total_logs].format(nickname)}</div>',
             unsafe_allow_html=True,
         )
@@ -569,7 +601,7 @@ with tab_home:
     for msg in st.session_state.chat_history[-8:]:
         if msg["role"] == "user":
             st.markdown(
-                f'<div style="background:#EAF3DE;border-radius:12px 12px 4px 12px;'
+                f'<div style="background:#E8DDD0;border-radius:12px 12px 4px 12px;'
                 f'padding:8px 12px;margin:6px 0 6px 60px;text-align:right;font-size:13px;color:#2C2C2A;">'
                 f'{msg["content"]}</div>',
                 unsafe_allow_html=True,
@@ -657,8 +689,8 @@ with tab_diag:
             ratio      = lesion.get("ratio",0) * 100
             disease_kr = DISEASE_KOREAN.get(disease.get("name",""), disease.get("korean", disease.get("name","")))
 
-            if ratio <= 5:   sev_text, sev_color = "건강해 보여", "#97C459"
-            elif ratio <= 10: sev_text, sev_color = "아직 초기야. 지금 잡으면 돼", "#97C459"
+            if ratio <= 5:   sev_text, sev_color = "건강해 보여", "#A89070"
+            elif ratio <= 10: sev_text, sev_color = "아직 초기야. 지금 잡으면 돼", "#A89070"
             elif ratio <= 25: sev_text, sev_color = "중기야. 관심이 필요해", "#EF9F27"
             else:             sev_text, sev_color = "후기야. 적극적인 케어 필요", "#E24B4A"
 
@@ -670,7 +702,7 @@ with tab_diag:
                 f'{disease_kr} · 신뢰도 {disease.get("confidence",0):.0%}</div>'
                 f'<div style="background:#E5E0D5;border-radius:6px;height:8px;margin:8px 0;overflow:hidden;">'
                 f'<div style="width:{min(ratio,100)}%;height:100%;background:{sev_color};border-radius:6px;"></div></div>'
-                f'<div style="font-size:12px;color:#3B6D11;">병변 {ratio:.1f}% — {sev_text}</div>'
+                f'<div style="font-size:12px;color:#8B7355;">병변 {ratio:.1f}% — {sev_text}</div>'
                 f'</div>',
                 unsafe_allow_html=True,
             )
@@ -689,7 +721,7 @@ with tab_diag:
                 if st.session_state.show_guide:
                     st.markdown(
                         f'<div style="background:white;border-radius:16px;padding:16px;'
-                        f'border-left:3px solid #3B6D11;margin:8px 0;font-size:13px;color:#2C2C2A;line-height:1.7;">'
+                        f'border-left:3px solid #8B7355;margin:8px 0;font-size:13px;color:#2C2C2A;line-height:1.7;">'
                         f'{care["text"]}'
                         f'<div style="font-size:11px;color:#888780;margin-top:8px;font-style:italic;">'
                         f'네가 이렇게 신경 써주는 거, {nickname}한테 큰 힘이 될 거야</div></div>',
@@ -715,7 +747,7 @@ with tab_diag:
             )
             # 현재 진단 컨텍스트 칩
             st.markdown(
-                f'<div style="display:inline-block;background:#F0EDE6;border-radius:20px;'
+                f'<div style="display:inline-block;background:#EDE5D8;border-radius:20px;'
                 f'padding:4px 12px;font-size:11px;color:#888780;margin-bottom:8px;">'
                 f'현재 진단: {nickname} · {disease_kr} · 병변 {ratio:.1f}%</div>',
                 unsafe_allow_html=True,
@@ -727,7 +759,7 @@ with tab_diag:
             for msg in st.session_state.diag_chat[-6:]:
                 if msg["role"] == "user":
                     st.markdown(
-                        f'<div style="background:#EAF3DE;border-radius:12px 12px 4px 12px;'
+                        f'<div style="background:#E8DDD0;border-radius:12px 12px 4px 12px;'
                         f'padding:8px 12px;margin:6px 0 6px 60px;text-align:right;font-size:13px;color:#2C2C2A;">'
                         f'{msg["content"]}</div>',
                         unsafe_allow_html=True,
@@ -786,7 +818,7 @@ with tab_hist:
                 f'<div style="display:flex;align-items:center;gap:6px;margin:4px 0;font-size:11px;color:#888780;">'
                 f'<span style="width:40px;">{lbl}</span>'
                 f'<div style="flex:1;background:#E5E0D5;border-radius:4px;height:5px;overflow:hidden;">'
-                f'<div style="width:{pct}%;height:100%;background:#3B6D11;border-radius:4px;"></div></div>'
+                f'<div style="width:{pct}%;height:100%;background:#8B7355;border-radius:4px;"></div></div>'
                 f'<span>{count}번</span></div>',
                 unsafe_allow_html=True,
             )
@@ -842,7 +874,7 @@ with tab_hist:
                     f'<div style="background:white;padding:10px 14px;border-radius:12px;'
                     f'margin:4px 0;font-size:12px;color:#2C2C2A;">'
                     f'{fmt_date_kr(log["date"])} — {label}{lesion_txt}'
-                    f'<span style="color:#3B6D11;font-size:11px;"> {comment}</span></div>',
+                    f'<span style="color:#8B7355;font-size:11px;"> {comment}</span></div>',
                     unsafe_allow_html=True,
                 )
             if not show_all and len(care_logs) > 5:
@@ -866,15 +898,15 @@ with tab_hist:
 
         # 돌봄 리포트 카드
         st.markdown(
-            f'<div style="background:linear-gradient(135deg,#EAF3DE,#FFF9E6);border-radius:20px;'
+            f'<div style="background:linear-gradient(135deg,#E8DDD0,#FAF6F0);border-radius:20px;'
             f'padding:20px;margin:12px 0;text-align:center;">'
-            f'<div style="font-size:14px;font-weight:600;color:#3B6D11;margin-bottom:12px;">돌봄 리포트</div>'
+            f'<div style="font-size:14px;font-weight:600;color:#8B7355;margin-bottom:12px;">돌봄 리포트</div>'
             f'<div style="display:flex;justify-content:space-around;">'
             f'<div><div style="font-size:24px;font-weight:700;color:#2C2C2A;">{total_logs}</div>'
             f'<div style="font-size:10px;color:#888780;">총 기록</div></div>'
             f'<div><div style="font-size:24px;font-weight:700;color:#2C2C2A;">{streak}</div>'
             f'<div style="font-size:10px;color:#888780;">연속 돌봄</div></div>'
-            f'<div><div style="font-size:24px;font-weight:700;color:#3B6D11;">{f"-{lesion_dec}" if lesion_dec else "—"}</div>'
+            f'<div><div style="font-size:24px;font-weight:700;color:#8B7355;">{f"-{lesion_dec}" if lesion_dec else "—"}</div>'
             f'<div style="font-size:10px;color:#888780;">병변 감소</div></div>'
             f'</div></div>',
             unsafe_allow_html=True,
@@ -942,7 +974,7 @@ with tab_hist:
         user_insights = analyze_user_pattern(care_logs)
         if user_insights:
             bullets = "".join(
-                f'<div style="font-size:12px;color:#3B6D11;line-height:1.7;margin:3px 0;">• {ins}</div>'
+                f'<div style="font-size:12px;color:#8B7355;line-height:1.7;margin:3px 0;">• {ins}</div>'
                 for ins in user_insights
             )
             st.markdown(
@@ -983,7 +1015,7 @@ with tab_hist:
         stages = []
         reg_date = current.get("registered","")
         if reg_date:
-            stages.append(("🌱","새로운 만남", fmt_date_kr(reg_date), f'"{nickname}야? 잘 부탁해"', "#C0DD97"))
+            stages.append(("🌱","새로운 만남", fmt_date_kr(reg_date), f'"{nickname}야? 잘 부탁해"', "#C4B09A"))
         if diagnosis_logs:
             first_d = diagnosis_logs[0]
             stages.append(("😟","아픈 날", fmt_date_kr(first_d["date"]),
@@ -992,13 +1024,13 @@ with tab_hist:
             pcts = " → ".join([f'{l["lesion"]*100:.0f}%' for l in diagnosis_logs[:4]])
             stages.append(("💊","함께 이겨내기",
                            f'{fmt_date_kr(diagnosis_logs[0]["date"])} ~ {fmt_date_kr(diagnosis_logs[-1]["date"])}',
-                           f'{pcts}', "#3B6D11"))
+                           f'{pcts}', "#8B7355"))
         if days >= 30:
             stages.append(("🌿","알아가는 중", f"{days}일째",
-                           f'"돌봄이 습관이 되고 있어. 이 시간이 너한테도 의미 있을 거야"', "#3B6D11"))
+                           f'"돌봄이 습관이 되고 있어. 이 시간이 너한테도 의미 있을 거야"', "#8B7355"))
         if diagnosis_logs and diagnosis_logs[-1]["lesion"] <= 0.05:
             stages.append(("😊","거의 회복!", fmt_date_kr(diagnosis_logs[-1]["date"]),
-                           f'"봐봐, 너가 잘 돌봐준 거야"', "#97C459"))
+                           f'"봐봐, 너가 잘 돌봐준 거야"', "#A89070"))
 
         for i, (em, title, date_s, desc, dot_color) in enumerate(stages):
             st.markdown(
@@ -1006,19 +1038,19 @@ with tab_hist:
                 f'<div style="display:flex;flex-direction:column;align-items:center;width:14px;">'
                 f'<div style="width:14px;height:14px;border-radius:50%;background:{dot_color};'
                 f'border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.1);flex-shrink:0;"></div>'
-                + (f'<div style="width:2px;background:#3B6D11;flex:1;min-height:24px;margin:2px 0;"></div>' if i < len(stages)-1 else '')
+                + (f'<div style="width:2px;background:#8B7355;flex:1;min-height:24px;margin:2px 0;"></div>' if i < len(stages)-1 else '')
                 + f'</div><div style="flex:1;padding-bottom:8px;">'
                 f'<div style="font-size:14px;font-weight:600;color:#2C2C2A;">{em} {title}</div>'
                 f'<div style="font-size:10px;color:#B4B2A9;margin-top:1px;">{date_s}</div>'
-                f'<div style="font-size:11px;color:#3B6D11;margin-top:2px;line-height:1.4;">{desc}</div>'
+                f'<div style="font-size:11px;color:#8B7355;margin-top:2px;line-height:1.4;">{desc}</div>'
                 f'</div></div>',
                 unsafe_allow_html=True,
             )
 
         st.markdown(
-            '<div style="background:linear-gradient(135deg,#EAF3DE,#FFF9E6);border-radius:16px;'
+            '<div style="background:linear-gradient(135deg,#E8DDD0,#FAF6F0);border-radius:16px;'
             'padding:18px 20px;margin:16px 0;text-align:center;">'
-            '<div style="font-size:15px;font-weight:600;color:#3B6D11;line-height:1.5;">'
+            '<div style="font-size:15px;font-weight:600;color:#8B7355;line-height:1.5;">'
             '돌봄이 관계가 되고,<br>관계가 성장이 됩니다 🌱</div>'
             '<div style="font-size:12px;color:#888780;margin-top:6px;line-height:1.5;">'
             '식물을 돌보는 시간이<br>나를 돌보는 시간이 됩니다</div></div>',
@@ -1041,10 +1073,10 @@ with tab_hist:
                 f'<div style="font-size:12px;font-weight:600;color:#2C2C2A;">🌱 새로운 만남</div>'
                 f'<div style="font-size:10px;color:#B4B2A9;margin-top:4px;">기록 0개 · 진단 0번</div>'
                 f'</div>'
-                f'<div style="flex:1;background:#EAF3DE;border-radius:12px;padding:12px;">'
-                f'<div style="font-size:10px;color:#3B6D11;margin-bottom:4px;">Day {days} · {nickname}</div>'
+                f'<div style="flex:1;background:#E8DDD0;border-radius:12px;padding:12px;">'
+                f'<div style="font-size:10px;color:#8B7355;margin-bottom:4px;">Day {days} · {nickname}</div>'
                 f'<div style="font-size:12px;font-weight:600;color:#2C2C2A;">🌿 알아가는 중</div>'
-                f'<div style="font-size:10px;color:#3B6D11;margin-top:4px;">기록 {total_logs}개 · {lesion_range}</div>'
+                f'<div style="font-size:10px;color:#8B7355;margin-top:4px;">기록 {total_logs}개 · {lesion_range}</div>'
                 f'</div></div>'
                 f'</div>',
                 unsafe_allow_html=True,

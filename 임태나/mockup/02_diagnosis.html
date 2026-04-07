@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a1a;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Noto Sans KR',system-ui,sans-serif}
+.phone{width:360px;background:#2C2C2A;border-radius:40px;padding:12px;box-shadow:0 12px 48px rgba(0,0,0,0.4)}
+.inner{background:#F7F5F0;border-radius:30px;overflow:hidden;min-height:700px;position:relative;padding-bottom:60px}
+.notch{width:110px;height:8px;background:#2C2C2A;border-radius:4px;margin:10px auto 16px}
+.p{padding:18px 22px}
+.avatar{width:38px;height:38px;background:#EAF3DE;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.bubble{background:#fff;border:0.5px solid #E5E0D5;border-radius:14px 14px 14px 4px;padding:11px 15px;font-size:13.5px;color:#2C2C2A;flex:1;margin-left:10px;line-height:1.6}
+.bname{font-size:10px;color:#3B6D11;font-weight:600;margin-bottom:3px}
+.chat{display:flex;align-items:flex-start;margin:12px 0}
+.img-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.img-ph{background:#E5E0D5;border-radius:14px;height:100px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#888780}
+.img-sam{border:2px solid #97C459}
+.result-card{background:#fff;border-radius:20px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin:10px 0}
+.r-title{font-size:18px;font-weight:700;color:#2C2C2A}
+.r-sub{font-size:13px;color:#888780;margin:4px 0}
+.prog-bg{background:#E5E0D5;border-radius:6px;height:8px;margin:10px 0;overflow:hidden}
+.prog-fill{height:100%;border-radius:6px;background:#97C459}
+.r-status{font-size:12px;color:#3B6D11}
+.guide-card{background:#fff;border-radius:16px;padding:16px;border-left:3px solid #3B6D11;margin:10px 0;font-size:13px;color:#2C2C2A;line-height:1.7}
+.guide-footer{font-size:11px;color:#888780;margin-top:10px;font-style:italic}
+.guide-audio{font-size:11px;color:#3B6D11;margin-top:6px;cursor:pointer}
+.divider{border:none;border-top:0.5px solid #E5E0D5;margin:14px 0}
+.care-title{font-size:14px;font-weight:600;color:#2C2C2A;margin:4px 0 8px}
+.chip{display:inline-block;background:#EAF3DE;color:#3B6D11;border:none;border-radius:14px;padding:6px 12px;font-size:12px;margin:3px}
+.bnav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:0.5px solid #E5E0D5;display:flex;justify-content:space-around;padding:12px 0 10px;font-size:10px}
+.ni{text-align:center;color:#B4B2A9}.na{text-align:center;color:#3B6D11;font-weight:600}
+</style></head><body>
+<div class="phone"><div class="inner">
+<div class="notch"></div>
+<div class="p">
+<div class="img-row">
+<div class="img-ph">📷 원본</div>
+<div class="img-ph img-sam">🔬 SAM 분석</div>
+</div>
+<div class="result-card">
+<div class="r-title">마리가 좀 아프대</div>
+<div class="r-sub">후기 마름병 · 신뢰도 85%</div>
+<div class="prog-bg"><div class="prog-fill" style="width:9%"></div></div>
+<div class="r-status">병변 9.1% — 아직 초기야. 지금 잡으면 돼</div>
+</div>
+<div class="chat"><div class="avatar">😟</div><div class="bubble"><div class="bname">분즈</div>마리한테 물어봤는데, 좀 힘들다고 해. 근데 너가 빨리 알아챈 거니까 괜찮아. 같이 돌보자</div></div>
+<div class="guide-card">
+습도 조절하고 과습 피하면 돼. 환기도 신경 써줘. 감염된 잎은 살짝 잘라주고, 다른 잎으로 번지지 않게 도구 소독해.
+<div class="guide-audio">▶ 음성으로 듣기</div>
+<div class="guide-footer">네가 이렇게 신경 써주는 거, 마리한테 큰 힘이 될 거야</div>
+</div>
+<hr class="divider">
+<div class="care-title">마리한테 뭐 해줄 거야?</div>
+<div>
+<span class="chip">💧 물줬음</span><span class="chip">💊 약줬음</span><span class="chip">😊 그냥봄</span><span class="chip">✂️ 가지치기</span>
+</div>
+<div style="margin-top:4px">
+<span class="chip">☀️ 자리옮김</span><span class="chip">🪴 분갈이</span><span class="chip">🍃 잎닦음</span>
+</div>
+</div>
+<div class="bnav"><div class="ni">🏠 홈</div><div class="na">📷 진단</div><div class="ni">🎙️ 상담</div><div class="ni">📊 이력</div></div>
+</div></div>
+</body></html>

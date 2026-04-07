@@ -13,7 +13,7 @@ import json
 from fastapi import Body, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.api.routes import diagnose, plants
+from src.api.routes import diagnose, medicine, plants, voice
 from src.config import CARE_LOG_JSONL
 
 app = FastAPI(
@@ -32,6 +32,8 @@ app.add_middleware(
 
 app.include_router(diagnose.router)
 app.include_router(plants.router)
+app.include_router(voice.router)
+app.include_router(medicine.router)
 
 
 @app.get("/health")
@@ -59,24 +61,6 @@ async def care_guide(request: dict = Body(...)):
         "care_guide": {"text": guide, "source": "db"},
         "boonz": {"mood": "happy", "message": guide},
     }
-
-
-# ── /consult/text ──────────────────────────────────────────────────
-
-@app.post("/consult/text")
-async def consult_text(request: dict = Body(...)):
-    """DB 팁 참조 → LLM 톤 변환 챗봇.
-
-    Body: {"question": str, "nickname": str, "diagnosis_context": str}
-    """
-    question  = request.get("question", "")
-    nickname  = request.get("nickname", "식물")
-    diag_ctx  = request.get("diagnosis_context", "")
-
-    from src.inference.llm import answer_care_question_from_db
-    answer = answer_care_question_from_db(question, nickname, diag_ctx)
-
-    return {"boonz": {"mood": "happy", "message": answer}}
 
 
 # ── /pattern/{nickname} ────────────────────────────────────────────
