@@ -11,8 +11,10 @@ from loguru import logger
 from src.config import OLLAMA_BASE_URL, OLLAMA_MODEL
 
 TIMEOUT = 60
-_OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-_OPENAI_MODEL   = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+_OPENAI_API_KEY  = os.getenv("OPENAI_API_KEY", "")
+_OPENAI_MODEL    = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+_GOOGLE_API_KEY  = os.getenv("GOOGLE_API_KEY", "")
+_GEMMA4_MODEL    = os.getenv("GEMMA4_MODEL", "gemma-3-4b-it")
 
 # ── 프롬프트 템플릿 v2 ───────────────────────────────────────────
 
@@ -230,7 +232,7 @@ def get_prompt(prompt_type: str, **kwargs) -> str:
 
 
 def _call_llm(prompt: str) -> str:
-    """OpenAI API 우선, 실패 시 Ollama 폴백."""
+    """OpenAI API 우선, 실패 시 Gemma 4 (Google AI) 폴백."""
     # 1순위: OpenAI API
     if _OPENAI_API_KEY:
         try:
@@ -249,28 +251,33 @@ def _call_llm(prompt: str) -> str:
             text = resp.choices[0].message.content or ""
             if text:
                 return text
-            logger.warning("OpenAI 빈 응답, Ollama 폴백")
+            logger.warning("OpenAI 빈 응답, Gemma 4 폴백")
         except Exception as e:
-            logger.warning(f"OpenAI 실패, Ollama 폴백: {e}")
+            logger.warning(f"OpenAI 실패, Gemma 4 폴백: {e}")
 
-    # 2순위: Ollama 로컬 (오프라인 가능)
-    try:
-        resp = requests.post(
-            f"{OLLAMA_BASE_URL}/api/generate",
-            json={
-                "model": OLLAMA_MODEL,
-                "system": "반드시 한국어로만 답해. 중국어, 영어, 일본어 절대 쓰지 마. 반말로. 짧게.",
-                "prompt": prompt,
-                "stream": False,
-                "options": {"temperature": 0.7, "num_predict": 512},
-            },
-            timeout=TIMEOUT,
-        )
-        resp.raise_for_status()
-        return resp.json()["response"]
-    except Exception as e:
-        logger.error(f"Ollama도 실패: {e}")
-        return ""
+    # 2순위: Gemma 4 (Google AI API)
+    if _GOOGLE_API_KEY:
+        try:
+            from google import genai
+            from google.genai import types
+            client = genai.Client(api_key=_GOOGLE_API_KEY)
+            resp = client.models.generate_content(
+                model=_GEMMA4_MODEL,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=BOONZ_PERSONA,
+                    temperature=0.7,
+                    max_output_tokens=512,
+                ),
+            )
+            text = resp.text or ""
+            if text:
+                return text
+            logger.warning("Gemma 4 빈 응답")
+        except Exception as e:
+            logger.error(f"Gemma 4 실패: {e}")
+
+    return ""
 
 
 # ── 공개 함수 ────────────────────────────────────────────────────

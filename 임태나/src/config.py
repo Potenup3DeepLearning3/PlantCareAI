@@ -121,7 +121,7 @@ CARE_LOG_JSONL = DATA_DIR / "care_log.jsonl"
 DIAGNOSIS_HISTORY_JSONL = DATA_DIR / "diagnosis_history.jsonl"
 
 # ── Ollama (로컬 LLM) ────────────────────────────────────────
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:7b")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gemma3:4b")
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
 # ── 외부 API 키 ──────────────────────────────────────────────
