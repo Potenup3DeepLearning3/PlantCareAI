@@ -75,7 +75,11 @@ async def diagnose(
             with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as tmp:
                 tmp_path = tmp.name
                 pil_image.save(tmp_path)
-            clip_description = describe_plant_state(tmp_path)
+            clip_result = describe_plant_state(tmp_path)
+            if isinstance(clip_result, tuple):
+                clip_description, _ = clip_result
+            else:
+                clip_description = str(clip_result)
             os.unlink(tmp_path)
             clip_used = True
             logger.info(f"CLIP 보완: {clip_description}")

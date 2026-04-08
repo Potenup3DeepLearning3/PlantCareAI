@@ -34,13 +34,15 @@ hr,st-emotion-cache-ocqkz7{border-color:#E5E0D5!important}
     color:#B4B2A9!important;background:transparent!important;border:none!important;
     font-size:11px!important;padding:4px 14px!important;
     flex-direction:column!important;gap:2px!important;font-weight:400!important}
-.stTabs [aria-selected="true"]{color:#8B7355!important;font-weight:600!important}
+.stTabs [aria-selected="true"]{
+    color:#8B7355!important;font-weight:700!important}
+.stTabs [aria-selected="true"] *{
+    color:#8B7355!important;font-weight:700!important}
 .stTabs [data-baseweb="tab-border"],.stTabs [data-baseweb="tab-highlight"]{display:none!important}
 
 /* ── 입력창 ── */
 .stTextInput input,.stTextArea textarea{
-    background:white!important;border:1.5px solid #E5E0D5!important;
-    border-radius:12px!important;color:#2C2C2A!important;font-size:13px!important}
+    background:white!important;color:#2C2C2A!important;font-size:13px!important}
 .stTextInput input::placeholder,.stTextArea textarea::placeholder{color:#B4B2A9!important}
 .stTextInput input:focus{border-color:#8B7355!important;outline:none!important}
 
@@ -51,7 +53,17 @@ hr,st-emotion-cache-ocqkz7{border-color:#E5E0D5!important}
 [data-testid="stFileUploader"] section,
 [data-testid="stFileUploader"] section>div,
 [data-testid="stFileUploaderDropzone"],
-[data-testid="stFileUploaderDropzone"]>div{background:white!important}
+[data-testid="stFileUploaderDropzone"]>div,
+[data-testid="stFileUploaderFile"],
+[data-testid="stFileUploaderFileData"],
+[data-testid="stFileUploaderFileName"],
+[data-testid="stFileUploaderDeleteBtn"],
+[data-testid="stFileUploader"] [class*="st-emotion-cache-"]{
+    background:white!important}
+[data-testid="stFileUploaderFileName"],
+[data-testid="stFileUploaderDeleteBtn"],
+[data-testid="stFileUploader"] [class*="st-emotion-cache-"] *{
+    color:#2C2C2A!important}
 [data-testid="stFileUploaderDropzone"] button{
     background:white!important;color:#2C2C2A!important;
     border:1.5px solid #C4B09A!important;border-radius:8px!important}
@@ -70,20 +82,60 @@ div[data-testid="stHorizontalBlock"] .stButton>button{
     color:#2C2C2A!important;font-size:11px!important;
     padding:6px 2px!important;white-space:pre-line!important;
     box-shadow:none!important;line-height:1.4!important;font-weight:400!important;
-    width:100%!important}
+    width:100%!important;position:relative!important;overflow:visible!important}
 div[data-testid="stHorizontalBlock"] .stButton>button:hover{
     background:#E8DDD0!important;border-color:#8B7355!important}
+div[data-testid="stHorizontalBlock"] .stButton>button:active::after{
+    content:"✨";position:absolute;top:-8px;right:-6px;
+    font-size:13px;line-height:1;pointer-events:none;
+    animation:sparkle-pop .55s ease-out forwards}
+@keyframes sparkle-pop{
+    0%{opacity:0;transform:translateY(2px) scale(.75) rotate(-10deg)}
+    20%{opacity:1;transform:translateY(0) scale(1.08) rotate(0deg)}
+    100%{opacity:0;transform:translateY(-8px) scale(.92) rotate(8deg)}
+}
 
 /* ── 일반 버튼 (full-width mocha) ── */
-.stButton>button{
+.stButton>button,
+.stFormSubmitButton>button{
     border-radius:20px!important;background:#8B7355!important;
     border:none!important;color:white!important;
     padding:10px 20px!important;font-size:13px!important;font-weight:500!important}
-.stButton>button:hover{background:#7A6347!important}
+.stButton>button *,
+.stFormSubmitButton>button *{
+    color:#FFFFFF!important}
+.stButton>button:hover,
+.stFormSubmitButton>button:hover{background:#7A6347!important}
+
+/* 케어 7개 아이콘 버튼 텍스트는 원래 다크 톤 유지 */
+div[data-testid="stHorizontalBlock"] .stButton>button,
+div[data-testid="stHorizontalBlock"] .stButton>button *{
+    color:#2C2C2A!important}
+
+/* ── Expander(식물 관리) 헤더 버튼 톤 고정 ── */
+div[data-testid="stExpander"]{
+    background:transparent!important}
+div[data-testid="stExpander"] summary{
+    background:#E8DDD0!important;color:#2C2C2A!important;
+    border-radius:12px!important}
+div[data-testid="stExpander"] details{
+    background:transparent!important}
+div[data-testid="stExpander"] details > div{
+    background:#FFFFFF!important;border-radius:12px!important}
+div[data-testid="stExpander"] summary:hover,
+div[data-testid="stExpander"] summary:active,
+div[data-testid="stExpander"] details[open] > summary,
+div[data-testid="stExpander"] details[open] summary{
+    background:#DCCDBA!important;color:#2C2C2A!important}
+div[data-testid="stExpander"] summary *{
+    color:#2C2C2A!important}
+div[data-testid="stExpander"] summary:focus,
+div[data-testid="stExpander"] summary:focus-visible{
+    outline:none!important;box-shadow:0 0 0 2px #C4B09A!important}
 
 /* ── segmented_control ── */
 div[data-testid="stElementContainer"]:has(div[data-testid="stButtonGroup"]),
-div[class*="st-key-diag_mode"]{
+div[data-testid="stElementContainer"]:has(div[data-testid="stButtonGroup"]){
     width:100%!important;display:block!important}
 div[data-testid="stButtonGroup"]{
     display:flex!important;width:100%!important;min-width:0!important;
@@ -700,11 +752,10 @@ with tab_home:
 # 탭2: 진단 — 분즈 🍄 (초월자)
 # ══════════════════════════════════════
 with tab_diag:
-    diag_mode = st.segmented_control(
-        "모드", ["원본", "SAM 분석"], default="원본",
-        label_visibility="collapsed", key="diag_mode",
+    st.markdown(
+        '<div style="font-size:15px;font-weight:700;color:#2C2C2A;margin:4px 0 4px;">SAM 진단</div>',
+        unsafe_allow_html=True,
     )
-    st.markdown('<div style="margin-top:8px;"></div>', unsafe_allow_html=True)
 
     uploaded = st.file_uploader(
         "잎 사진을 올려줘", type=["jpg", "jpeg", "png"],
@@ -749,8 +800,11 @@ with tab_diag:
         result = st.session_state.get("_diag_result")
         if result:
             overlay = result.get("overlay_image") or result.get("lesion", {}).get("overlay_base64", "")
-            if overlay and diag_mode == "SAM 분석":
-                st.image(base64.b64decode(overlay), caption="SAM 분석", use_container_width=True)
+            if overlay:
+                st.image(base64.b64decode(overlay), caption="SAM 분석 결과", use_container_width=True)
+                seg_quality = result.get("lesion", {}).get("segmentation_quality")
+                if seg_quality:
+                    st.caption(f"SAM 분석 품질: {seg_quality}")
 
             disease    = result.get("disease", {})
             lesion     = result.get("lesion", {})
@@ -1033,7 +1087,7 @@ with tab_growth:
         st.markdown(
             f'<div style="background:white;border-radius:16px;padding:16px;margin:12px 0;'
             f'box-shadow:0 2px 6px rgba(0,0,0,0.04);">'
-            f'<div style="font-size:13px;font-weight:600;color:#2C2C2A;margin-bottom:8px;">🪞 마리가 본 너</div>'
+            f'<div style="font-size:13px;font-weight:600;color:#2C2C2A;margin-bottom:8px;">🪞 {nickname}가 본 너</div>'
             f'{bullets}'
             f'</div>',
             unsafe_allow_html=True,
