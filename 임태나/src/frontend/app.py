@@ -88,7 +88,8 @@ div[data-testid="stHorizontalBlock"] .stButton>button:hover{
 div[data-testid="stHorizontalBlock"] .stButton>button:active::after{
     content:"✨";position:absolute;top:-8px;right:-6px;
     font-size:13px;line-height:1;pointer-events:none;
-    animation:sparkle-pop .55s ease-out forwards}
+    background:transparent!important;border:none!important;box-shadow:none!important;
+    animation:sparkle-pop .55s ease-out 1}
 @keyframes sparkle-pop{
     0%{opacity:0;transform:translateY(2px) scale(.75) rotate(-10deg)}
     20%{opacity:1;transform:translateY(0) scale(1.08) rotate(0deg)}
@@ -132,6 +133,28 @@ div[data-testid="stExpander"] summary *{
 div[data-testid="stExpander"] summary:focus,
 div[data-testid="stExpander"] summary:focus-visible{
     outline:none!important;box-shadow:0 0 0 2px #C4B09A!important}
+
+/* 터치/모바일 환경에서는 hover 상태 잔류 방지 */
+@media (hover: none), (pointer: coarse){
+    [data-testid="stFileUploaderDropzone"] button:hover{
+        background:white!important}
+    [data-testid="stFileUploaderDropzone"] button:active{
+        background:#EDE5D8!important}
+    div[data-testid="stHorizontalBlock"] .stButton>button:hover{
+        background:white!important;border-color:#E5E0D5!important}
+    div[data-testid="stHorizontalBlock"] .stButton>button:active{
+        background:#E8DDD0!important;border-color:#8B7355!important}
+    .stButton>button:hover,
+    .stFormSubmitButton>button:hover{
+        background:#8B7355!important}
+    .stButton>button:active,
+    .stFormSubmitButton>button:active{
+        background:#7A6347!important}
+    div[data-testid="stExpander"] summary:hover{
+        background:#E8DDD0!important;color:#2C2C2A!important}
+    div[data-testid="stExpander"] summary:active{
+        background:#DCCDBA!important;color:#2C2C2A!important}
+}
 
 /* ── segmented_control ── */
 div[data-testid="stElementContainer"]:has(div[data-testid="stButtonGroup"]),
@@ -555,6 +578,17 @@ if len(plant_names) > 1:
 else:
     nickname = plant_names[0]
 
+# 식물 전환 시 진단 탭 상태 초기화 (이전 식물 업로드 이미지/결과 제거)
+prev_nickname = st.session_state.get("_selected_nickname")
+if prev_nickname != nickname:
+    st.session_state["_selected_nickname"] = nickname
+    for k in ("_diag_file_id", "_diag_result", "_diag_analyzed", "show_guide", "diag_chat"):
+        st.session_state.pop(k, None)
+    # 식물별 업로더 상태 초기화
+    for k in list(st.session_state.keys()):
+        if k.startswith("diag_upload_"):
+            st.session_state.pop(k, None)
+
 current      = next((p for p in plants if p["nickname"] == nickname), {})
 days         = (datetime.now() - datetime.strptime(current.get("registered", "2026-01-01"), "%Y-%m-%d")).days
 care_logs    = load_care_log(nickname)
@@ -757,9 +791,10 @@ with tab_diag:
         unsafe_allow_html=True,
     )
 
+    diag_upload_key = f"diag_upload_{nickname}"
     uploaded = st.file_uploader(
         "잎 사진을 올려줘", type=["jpg", "jpeg", "png"],
-        key="diag_upload", label_visibility="collapsed",
+        key=diag_upload_key, label_visibility="collapsed",
     )
 
     if not uploaded:
