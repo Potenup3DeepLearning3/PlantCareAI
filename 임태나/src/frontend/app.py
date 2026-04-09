@@ -133,6 +133,12 @@ div[data-testid="stExpander"] summary *{
 div[data-testid="stExpander"] summary:focus,
 div[data-testid="stExpander"] summary:focus-visible{
     outline:none!important;box-shadow:0 0 0 2px #C4B09A!important}
+div[data-testid="stExpander"] .stFormSubmitButton>button{
+    border-radius:12px!important;
+    padding:6px 10px!important;
+    min-height:36px!important;
+    font-size:12px!important;
+    white-space:nowrap!important}
 
 /* 터치/모바일 환경에서는 hover 상태 잔류 방지 */
 @media (hover: none), (pointer: coarse){
@@ -394,12 +400,19 @@ def load_plants():
         return json.loads(PLANTS_FILE.read_text(encoding="utf-8"))
     return []
 
-def save_plant(nickname):
+def save_plant(nickname: str) -> bool:
+    nickname = nickname.strip()
+    if not nickname:
+        return False
     plants = load_plants()
+    existing = {str(p.get("nickname", "")).strip().lower() for p in plants}
+    if nickname.lower() in existing:
+        return False
     plants.append({"nickname": nickname, "species": "", "registered": datetime.now().strftime("%Y-%m-%d")})
     PLANTS_FILE.parent.mkdir(parents=True, exist_ok=True)
     PLANTS_FILE.write_text(json.dumps(plants, ensure_ascii=False, indent=2), encoding="utf-8")
     load_plants.clear()
+    return True
 
 def delete_plant(nickname):
     plants = [p for p in load_plants() if p["nickname"] != nickname]
@@ -532,7 +545,7 @@ def care_grid(key_prefix, nickname, level_emoji):
                 break
             em, lb, action = CARE_ICONS[idx]
             with col:
-                if st.button(f"{em}\n{lb}", key=f"{key_prefix}_{action}", use_container_width=True):
+                if st.button(f"{em}\n{lb}", key=f"{key_prefix}_{action}", width="stretch"):
                     action_taken = action
     if action_taken:
         save_care_log(nickname, action_taken)
@@ -573,8 +586,14 @@ if not plants:
 # 식물 선택 + 공통 계산
 # ═══════════════════════════════════════
 plant_names = [p["nickname"] for p in plants]
+# 새 식물 등록 직후 선택 박스를 해당 식물로 맞춘다.
+pending_selected = st.session_state.pop("_pending_selected_plant", None)
+if pending_selected and pending_selected in plant_names:
+    st.session_state["selected_plant"] = pending_selected
 if len(plant_names) > 1:
-    nickname = st.selectbox("내 식물", plant_names, label_visibility="collapsed")
+    nickname = st.selectbox(
+        "내 식물", plant_names, key="selected_plant", label_visibility="collapsed",
+    )
 else:
     nickname = plant_names[0]
 
@@ -749,7 +768,7 @@ with tab_home:
             "질문", placeholder="예: 잎이 노랗게 변하는데 왜 그래?",
             label_visibility="collapsed",
         )
-        submitted_home = st.form_submit_button("보내기", use_container_width=True)
+        submitted_home = st.form_submit_button("보내기", width="stretch")
 
     if submitted_home and question:
         st.session_state.chat_home.append({"role": "user", "content": question})
@@ -774,11 +793,38 @@ with tab_home:
 
     # ── 식물 관리 ──
     with st.expander("🌱 식물 관리"):
-        new_name = st.text_input("새 식물 별명", key="new_p", label_visibility="collapsed", placeholder="새 식물 별명")
-        if st.button("추가", key="add_p") and new_name:
-            save_plant(new_name)
+        with st.form("plant_manage_form", clear_on_submit=True):
+            new_name = st.text_input(
+                "새 식물 별명", key="new_p",
+                label_visibility="collapsed", placeholder="새 식물 별명",
+            )
+            add_status = st.session_state.get("_plant_add_status")
+            if add_status == "ok":
+                st.markdown(
+                    '<div style="font-size:12px;color:#4D7B38;font-weight:700;margin:-4px 0 6px;">등록되었습니다.</div>',
+                    unsafe_allow_html=True,
+                )
+            elif add_status == "dup":
+                st.markdown(
+                    '<div style="font-size:12px;color:#9B5E3A;font-weight:700;margin:-4px 0 6px;">이미 등록된 식물입니다.</div>',
+                    unsafe_allow_html=True,
+                )
+            col_add_btn, col_del_btn = st.columns(2)
+            with col_add_btn:
+                add_clicked = st.form_submit_button("추가", width="stretch")
+            with col_del_btn:
+                del_clicked = st.form_submit_button(f"🗑️ {nickname} 삭제", width="stretch")
+
+        if add_clicked and new_name.strip():
+            added_name = new_name.strip()
+            if save_plant(added_name):
+                st.session_state["_plant_add_status"] = "ok"
+                st.session_state["_pending_selected_plant"] = added_name
+            else:
+                st.session_state["_plant_add_status"] = "dup"
             st.rerun()
-        if st.button(f"🗑️ {nickname} 삭제", key="del_p"):
+        if del_clicked:
+            st.session_state["_plant_add_status"] = None
             delete_plant(nickname)
             st.rerun()
 
@@ -813,10 +859,10 @@ with tab_diag:
 
         col_img, _ = st.columns([3, 1])
         with col_img:
-            st.image(uploaded, caption="원본", use_container_width=True)
+            st.image(uploaded, caption="원본", width="stretch")
 
         if not st.session_state.get("_diag_analyzed"):
-            if st.button("🔍 분석하기", key="btn_analyze", use_container_width=True):
+            if st.button("🔍 분석하기", key="btn_analyze", width="stretch"):
                 st.session_state._diag_analyzed = True
                 boonz("잠깐, 식물 얘기 듣고 있어...")
                 try:
@@ -836,7 +882,7 @@ with tab_diag:
         if result:
             overlay = result.get("overlay_image") or result.get("lesion", {}).get("overlay_base64", "")
             if overlay:
-                st.image(base64.b64decode(overlay), caption="SAM 분석 결과", use_container_width=True)
+                st.image(base64.b64decode(overlay), caption="SAM 분석 결과", width="stretch")
                 seg_quality = result.get("lesion", {}).get("segmentation_quality")
                 if seg_quality:
                     st.caption(f"SAM 분석 품질: {seg_quality}")
@@ -880,7 +926,7 @@ with tab_diag:
             if care.get("text"):
                 if "show_guide" not in st.session_state:
                     st.session_state.show_guide = False
-                if st.button("💬 케어 가이드 받기", key="guide_btn", use_container_width=True):
+                if st.button("💬 케어 가이드 받기", key="guide_btn", width="stretch"):
                     st.session_state.show_guide = True
                 if st.session_state.show_guide:
                     source_txt = ""
@@ -899,7 +945,7 @@ with tab_diag:
             if species_i.get("name"):
                 update_species(nickname, species_i["name"])
 
-            if st.button("🔄 다시 분석", key="btn_reanalyze", use_container_width=False):
+            if st.button("🔄 다시 분석", key="btn_reanalyze", width="content"):
                 st.session_state._diag_analyzed = False
                 st.session_state._diag_result   = None
                 st.rerun()
@@ -931,7 +977,7 @@ with tab_diag:
                     "질문", placeholder="예: 이 병이 다른 잎으로 번져?",
                     label_visibility="collapsed",
                 )
-                submitted_diag = st.form_submit_button("보내기", use_container_width=True)
+                submitted_diag = st.form_submit_button("보내기", width="stretch")
 
             if submitted_diag and diag_q:
                 st.session_state.diag_chat.append({"role": "user", "content": diag_q})
@@ -1015,7 +1061,7 @@ with tab_diary:
                 unsafe_allow_html=True,
             )
         if not show_all and len(care_logs) > 7:
-            if st.button("이전 기록 더보기 ↓", key="more_diary", use_container_width=False):
+            if st.button("이전 기록 더보기 ↓", key="more_diary", width="content"):
                 st.session_state.show_all_diary = True
                 st.rerun()
     else:
@@ -1183,7 +1229,7 @@ with tab_growth:
         mari(s_em, f"아직 시작이야. 하나씩 해봐", nickname)
 
     # ── LLM 패턴 분석 (분즈) ──
-    if st.button("🔍 패턴 분석 받기", key="pattern_btn", use_container_width=True):
+    if st.button("🔍 패턴 분석 받기", key="pattern_btn", width="stretch"):
         if len(care_logs) >= 5:
             try:
                 resp = requests.get(f"{FASTAPI_URL}/pattern/{nickname}", timeout=60)
