@@ -609,6 +609,10 @@ if prev_nickname != nickname:
     st.session_state["_selected_nickname"] = nickname
     for k in ("_diag_file_id", "_diag_result", "_diag_analyzed", "show_guide", "diag_chat"):
         st.session_state.pop(k, None)
+    # 식물 전환 시 케어 가이드 캐시 초기화
+    for k in list(st.session_state.keys()):
+        if str(k).startswith("_care_guide_"):
+            st.session_state.pop(k, None)
     # 식물별 업로더 상태 초기화
     for k in list(st.session_state.keys()):
         if k.startswith("diag_upload_"):
@@ -696,9 +700,9 @@ with tab_home:
     elif gap == 1:
         mari(s_em, "어제도 왔었지. 꾸준한 거 좋다", nickname)
     elif 2 <= gap <= 3:
-        mari(s_em, f"{gap}일이야. 바쁜 건 알아. 근데 좀 보고 싶었어", nickname)
+        mari(s_em, f"{gap}일 만이야. 바쁜 건 알아. 근데 좀 보고 싶었어", nickname)
     elif 4 <= gap <= 7:
-        mari(s_em, f"야... {gap}일이야. 나 괜찮은데, 너는 괜찮아?", nickname)
+        mari(s_em, f"야... {gap}일 만이야. 나 괜찮은데, 너는 괜찮아?", nickname)
     elif gap > 7:
         mari(s_em, "오랜만이다. 그동안 어떻게 지냈어?", nickname)
     else:
@@ -777,21 +781,15 @@ with tab_home:
         st.session_state[home_chat_key] = []
     home_chat = st.session_state[home_chat_key]
 
-    if not home_chat:
-        mari(s_em, "뭐든 물어봐", nickname)
+    home_chat_container = st.container()
 
-    for msg in home_chat[-8:]:
-        if msg["role"] == "user":
-            user_bubble(msg["content"])
-        else:
-            mari(s_em, msg["content"], nickname)
-
-    with st.form("form_home_q", clear_on_submit=True):
-        question = st.text_input(
-            "질문", placeholder="예: 잎이 노랗게 변하는데 왜 그래?",
-            label_visibility="collapsed",
-        )
-        submitted_home = st.form_submit_button("보내기", width="stretch")
+    if st.session_state.pop("_clear_home_q", False):
+        st.session_state["home_q_input"] = ""
+    question = st.text_input(
+        "질문", key="home_q_input", placeholder="예: 잎이 노랗게 변하는데 왜 그래?",
+        label_visibility="collapsed",
+    )
+    submitted_home = st.button("보내기", key="home_send_btn", width="stretch")
 
     if submitted_home and question:
         home_chat.append({"role": "user", "content": question})
@@ -812,10 +810,21 @@ with tab_home:
             answer = "잘 모르겠는데, 사진 찍어서 진단 탭에서 봐봐"
         if not home_chat or home_chat[-1].get("content") != answer:
             home_chat.append({"role": "mari", "content": answer})
+        st.session_state["_clear_home_q"] = True
         st.rerun()
 
+    with home_chat_container:
+        if not home_chat:
+            mari(s_em, "뭐든 물어봐", nickname)
+
+        for msg in home_chat[-8:]:
+            if msg["role"] == "user":
+                user_bubble(msg["content"])
+            else:
+                mari(s_em, msg["content"], nickname)
+
     # ── 식물 관리 ──
-    with st.expander("🌱 식물 관리"):
+    with st.expander("🌱 반려식물 프로필 등록"):
         with st.form("plant_manage_form", clear_on_submit=True):
             new_name = st.text_input(
                 "새 식물 별명", key="new_p",
@@ -834,7 +843,7 @@ with tab_home:
                 )
             col_add_btn, col_del_btn = st.columns(2)
             with col_add_btn:
-                add_clicked = st.form_submit_button("반려식물 프로필 등록", width="stretch")
+                add_clicked = st.form_submit_button("등록", width="stretch")
             with col_del_btn:
                 del_clicked = st.form_submit_button(f"🗑️ {nickname} 삭제", width="stretch")
 
@@ -947,7 +956,9 @@ with tab_diag:
             boonz(boonz_msg)
 
             # 케어 가이드 (분즈 - DB 기반, lazy fetch + 캐싱)
-            _guide_cache_key = f"_care_guide_{disease.get('name', '')}_{int(ratio // 10)}"
+            _guide_cache_key = (
+                f"_care_guide_{nickname}_{disease.get('name', '')}_{int(ratio // 10)}"
+            )
             cached_guide = st.session_state.get(_guide_cache_key)
 
             if cached_guide:
@@ -1006,18 +1017,15 @@ with tab_diag:
             if "diag_chat" not in st.session_state:
                 st.session_state.diag_chat = []
 
-            for msg in st.session_state.diag_chat[-6:]:
-                if msg["role"] == "user":
-                    user_bubble(msg["content"])
-                else:
-                    boonz(msg["content"])
+            diag_chat_container = st.container()
 
-            with st.form("form_diag_q", clear_on_submit=True):
-                diag_q = st.text_input(
-                    "질문", placeholder="예: 이 병이 다른 잎으로 번져?",
-                    label_visibility="collapsed",
-                )
-                submitted_diag = st.form_submit_button("보내기", width="stretch")
+            if st.session_state.pop("_clear_diag_q", False):
+                st.session_state["diag_q_input"] = ""
+            diag_q = st.text_input(
+                "질문", key="diag_q_input", placeholder="예: 이 병이 다른 잎으로 번져?",
+                label_visibility="collapsed",
+            )
+            submitted_diag = st.button("보내기", key="diag_send_btn", width="stretch")
 
             if submitted_diag and diag_q:
                 st.session_state.diag_chat.append({"role": "user", "content": diag_q})
@@ -1034,7 +1042,15 @@ with tab_diag:
                     ans = "앗 연결이 안 됐어. 잠깐 후에 다시 해봐"
                 if not st.session_state.diag_chat or st.session_state.diag_chat[-1].get("content") != ans:
                     st.session_state.diag_chat.append({"role": "boonz", "content": ans})
+                st.session_state["_clear_diag_q"] = True
                 st.rerun()
+
+            with diag_chat_container:
+                for msg in st.session_state.diag_chat[-6:]:
+                    if msg["role"] == "user":
+                        user_bubble(msg["content"])
+                    else:
+                        boonz(msg["content"])
 
 # ══════════════════════════════════════
 # 탭3: 일기 — 마리 (돌봄 기록)
@@ -1268,16 +1284,3 @@ with tab_growth:
     else:
         mari(s_em, f"아직 시작이야. 하나씩 해봐", nickname)
 
-    # ── LLM 패턴 분석 (분즈) ──
-    if st.button("🔍 패턴 분석 받기", key="pattern_btn", width="stretch"):
-        if len(care_logs) >= 5:
-            try:
-                resp = requests.get(f"{FASTAPI_URL}/pattern/{nickname}", timeout=60)
-                b    = resp.json().get("boonz", {})
-                msg_text = b.get("message", "")
-                if msg_text:
-                    boonz(msg_text)
-            except Exception:
-                boonz("앗 연결이 안 됐어. 잠깐 후에 다시 해봐")
-        else:
-            boonz(f"기록이 {total_logs}개야. 5개 이상 쌓이면 패턴이 보일 거야")
