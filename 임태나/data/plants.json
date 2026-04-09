@@ -1,7 +1,7 @@
 [
   {
     "nickname": "마리",
-    "species": "Elephant Ear (Alocasia spp.)",
+    "species": "Dracaena",
     "registered": "2026-03-08"
   },
   {
@@ -22,21 +22,11 @@
   {
     "nickname": "개나리",
     "species": "Begonia (Begonia spp.)",
-    "registered": "2026-04-07"
+    "registered": "2026-03-19"
   },
   {
     "nickname": "로즈",
     "species": "Elephant Ear (Alocasia spp.)",
-    "registered": "2026-04-08"
-  },
-  {
-    "nickname": "집",
-    "species": "Ponytail Palm (Beaucarnea recurvata)",
-    "registered": "2026-04-08"
-  },
-  {
-    "nickname": "피자",
-    "species": "",
     "registered": "2026-04-08"
   }
 ]

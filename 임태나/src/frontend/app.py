@@ -772,13 +772,15 @@ with tab_home:
     divider()
 
     # ── 마리 챗봇 ──
-    if "chat_home" not in st.session_state:
-        st.session_state.chat_home = []
+    home_chat_key = f"chat_home_{nickname}"
+    if home_chat_key not in st.session_state:
+        st.session_state[home_chat_key] = []
+    home_chat = st.session_state[home_chat_key]
 
-    if not st.session_state.chat_home:
+    if not home_chat:
         mari(s_em, "뭐든 물어봐", nickname)
 
-    for msg in st.session_state.chat_home[-8:]:
+    for msg in home_chat[-8:]:
         if msg["role"] == "user":
             user_bubble(msg["content"])
         else:
@@ -792,7 +794,7 @@ with tab_home:
         submitted_home = st.form_submit_button("보내기", width="stretch")
 
     if submitted_home and question:
-        st.session_state.chat_home.append({"role": "user", "content": question})
+        home_chat.append({"role": "user", "content": question})
         diag_ctx = ""
         if "last_diagnosis" in st.session_state:
             d = st.session_state.last_diagnosis
@@ -808,8 +810,8 @@ with tab_home:
             answer = resp.json().get("boonz", {}).get("message", "") or resp.json().get("answer", {}).get("text", "")
         except Exception:
             answer = "잘 모르겠는데, 사진 찍어서 진단 탭에서 봐봐"
-        if not st.session_state.chat_home or st.session_state.chat_home[-1].get("content") != answer:
-            st.session_state.chat_home.append({"role": "mari", "content": answer})
+        if not home_chat or home_chat[-1].get("content") != answer:
+            home_chat.append({"role": "mari", "content": answer})
         st.rerun()
 
     # ── 식물 관리 ──
