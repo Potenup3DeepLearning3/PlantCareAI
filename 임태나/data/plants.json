@@ -1,33 +1,23 @@
 [
   {
     "nickname": "마리",
-    "species": "Begonia (Begonia spp.)",
+    "species": "Elephant Ear (Alocasia spp.)",
     "registered": "2026-03-08"
   },
   {
-    "nickname": "초록",
+    "nickname": "리아",
     "species": "Begonia (Begonia spp.)",
-    "registered": "2026-04-07"
+    "registered": "2025-12-30"
   },
   {
     "nickname": "초록이",
-    "species": "",
-    "registered": "2026-04-07"
-  },
-  {
-    "nickname": "리아",
-    "species": "",
-    "registered": "2026-04-07"
-  },
-  {
-    "nickname": "리아",
-    "species": "",
-    "registered": "2026-04-07"
+    "species": "Parlor Palm (Chamaedorea elegans)",
+    "registered": "2026-01-14"
   },
   {
     "nickname": "흰둥이",
     "species": "Begonia (Begonia spp.)",
-    "registered": "2026-04-07"
+    "registered": "2026-03-15"
   },
   {
     "nickname": "개나리",
@@ -35,8 +25,18 @@
     "registered": "2026-04-07"
   },
   {
-    "nickname": "나리",
+    "nickname": "로즈",
+    "species": "Elephant Ear (Alocasia spp.)",
+    "registered": "2026-04-08"
+  },
+  {
+    "nickname": "집",
+    "species": "Ponytail Palm (Beaucarnea recurvata)",
+    "registered": "2026-04-08"
+  },
+  {
+    "nickname": "피자",
     "species": "",
-    "registered": "2026-04-07"
+    "registered": "2026-04-08"
   }
 ]
