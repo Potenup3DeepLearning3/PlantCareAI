@@ -536,6 +536,12 @@ def plant_card(nickname, days, level_emoji, level, level_desc, species_text, met
 
 def care_grid(key_prefix, nickname, level_emoji):
     """원터치 케어 버튼 — 마리가 직접 응답."""
+    # 이전 클릭에서 저장된 응답 먼저 표시
+    resp_key = f"_care_resp_{key_prefix}"
+    if resp_key in st.session_state:
+        mari(level_emoji, st.session_state[resp_key], nickname)
+        del st.session_state[resp_key]
+
     action_taken = None
     for row in range(0, len(CARE_ICONS), 4):
         cols = st.columns(4)
@@ -553,7 +559,7 @@ def care_grid(key_prefix, nickname, level_emoji):
         full_msg = base_msg
         if nudge:
             full_msg += f"<br><br><span style='color:#888780;font-size:12px;'>... {nudge}</span>"
-        mari(level_emoji, full_msg, nickname)
+        st.session_state[resp_key] = full_msg
         st.rerun()
 
 def divider():
@@ -645,6 +651,21 @@ tab_home, tab_diag, tab_diary, tab_growth = st.tabs(["🏠 홈", "📷 진단", 
 # 탭1: 홈 — 마리가 직접 말함 (친한 동생)
 # ══════════════════════════════════════
 with tab_home:
+    # ── 신규 등록 환영 카드 ──
+    if "_welcome_plant" in st.session_state:
+        wname = st.session_state.pop("_welcome_plant")
+        st.markdown(
+            f'<div style="background:#F5F0E8;border-radius:20px;padding:18px 20px;'
+            f'border-left:4px solid #8B7355;margin:8px 0 14px;">'
+            f'<div style="font-size:15px;font-weight:700;color:#2C2C2A;margin-bottom:6px;">'
+            f'🌱 {wname} 등록 완료</div>'
+            f'<div style="font-size:13px;color:#5C5A55;line-height:1.6;">'
+            f'이름을 불러줬으니까, 이제 진짜야.<br>'
+            f'사진 올려주면 내가 한번 볼게.</div>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
+
     # ── 동적 타이틀 ──
     if days >= 8:
         main_title  = f"{nickname}와 함께한 지\n벌써 {days}일째야."
@@ -811,7 +832,7 @@ with tab_home:
                 )
             col_add_btn, col_del_btn = st.columns(2)
             with col_add_btn:
-                add_clicked = st.form_submit_button("추가", width="stretch")
+                add_clicked = st.form_submit_button("반려식물 프로필 등록", width="stretch")
             with col_del_btn:
                 del_clicked = st.form_submit_button(f"🗑️ {nickname} 삭제", width="stretch")
 
@@ -820,6 +841,8 @@ with tab_home:
             if save_plant(added_name):
                 st.session_state["_plant_add_status"] = "ok"
                 st.session_state["_pending_selected_plant"] = added_name
+                st.toast(f"{added_name} 등록됐어 🌱")
+                st.session_state._welcome_plant = added_name
             else:
                 st.session_state["_plant_add_status"] = "dup"
             st.rerun()
@@ -921,25 +944,40 @@ with tab_diag:
                 boonz_msg = f"{disease_kr}. 많이 힘들었겠다. 지금부터라도 길을 열어주면 돼."
             boonz(boonz_msg)
 
-            # 케어 가이드 (분즈 - DB 기반 + 출처)
-            care = result.get("care_guide", {})
-            if care.get("text"):
-                if "show_guide" not in st.session_state:
-                    st.session_state.show_guide = False
+            # 케어 가이드 (분즈 - DB 기반, lazy fetch + 캐싱)
+            _guide_cache_key = f"_care_guide_{disease.get('name', '')}_{int(ratio // 10)}"
+            cached_guide = st.session_state.get(_guide_cache_key)
+
+            if cached_guide:
+                st.markdown(
+                    f'<div style="background:white;border-radius:16px;padding:16px;'
+                    f'border-left:3px solid #8B7355;margin:8px 0;font-size:13px;color:#2C2C2A;line-height:1.7;">'
+                    f'{cached_guide}</div>',
+                    unsafe_allow_html=True,
+                )
+            else:
                 if st.button("💬 케어 가이드 받기", key="guide_btn", width="stretch"):
-                    st.session_state.show_guide = True
-                if st.session_state.show_guide:
-                    source_txt = ""
-                    if care.get("source"):
-                        source_txt = f'<div style="font-size:10px;color:#B4B2A9;margin-top:8px;">출처: {care["source"]}</div>'
-                    st.markdown(
-                        f'<div style="background:white;border-radius:16px;padding:16px;'
-                        f'border-left:3px solid #8B7355;margin:8px 0;font-size:13px;color:#2C2C2A;line-height:1.7;">'
-                        f'{care["text"]}{source_txt}</div>',
-                        unsafe_allow_html=True,
-                    )
-            if care.get("audio_url"):
-                st.audio(care["audio_url"])
+                    with st.spinner("분즈가 생각 중이야..."):
+                        try:
+                            clip_desc = result.get("clip", {}).get("description", "")
+                            resp_guide = requests.post(
+                                f"{FASTAPI_URL}/care-guide",
+                                json={
+                                    "nickname": nickname,
+                                    "disease": disease.get("name", ""),
+                                    "lesion_ratio": lesion.get("ratio", 0),
+                                    "clip_description": clip_desc,
+                                },
+                                timeout=45,
+                            )
+                            guide_text = resp_guide.json().get("care_guide", {}).get("text", "")
+                        except Exception:
+                            guide_text = ""
+                    if guide_text:
+                        st.session_state[_guide_cache_key] = guide_text
+                    else:
+                        st.caption("가이드를 불러오지 못했어. 다시 눌러봐")
+                    st.rerun()
 
             st.session_state.last_diagnosis = {"disease": disease.get("name", ""), "lesion": lesion.get("ratio", 0)}
             if species_i.get("name"):

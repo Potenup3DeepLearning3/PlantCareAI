@@ -268,7 +268,7 @@ def _call_llm(prompt: str) -> str:
                     {"role": "user", "content": prompt},
                 ],
                 temperature=0.7,
-                max_tokens=512,
+                max_tokens=250,
                 timeout=30,
             )
             text = resp.choices[0].message.content or ""
@@ -290,7 +290,7 @@ def _call_llm(prompt: str) -> str:
                 config=types.GenerateContentConfig(
                     system_instruction=BOONZ_PERSONA,
                     temperature=0.7,
-                    max_output_tokens=512,
+                    max_output_tokens=250,
                 ),
             )
             text = resp.text or ""
