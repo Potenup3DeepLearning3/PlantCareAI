@@ -268,3 +268,34 @@
 {"date": "2026-03-19 16:36", "plant": "개나리", "action": "water"}
 {"date": "2026-03-28 16:36", "plant": "개나리", "action": "clean"}
 {"date": "2026-04-07 16:36", "plant": "개나리", "action": "move"}
+{"date": "2026-04-07 16:35", "plant": "마리", "action": "repot"}
+{"date": "2026-04-07 16:36", "plant": "마리", "action": "water"}
+{"date": "2026-04-09 09:51", "plant": "마리", "action": "clean", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:51", "plant": "마리", "action": "water", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:51", "plant": "마리", "action": "move", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:51", "plant": "마리", "action": "prune", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:51", "plant": "개나리", "action": "clean", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:51", "plant": "개나리", "action": "prune", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:51", "plant": "개나리", "action": "observe", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:51", "plant": "개나리", "action": "move", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:51", "plant": "개나리", "action": "medicine", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:51", "plant": "개나리", "action": "water", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:51", "plant": "개나리", "action": "repot", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:51", "plant": "개나리", "action": "clean", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:52", "plant": "개나리", "action": "repot", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:52", "plant": "개나리", "action": "clean", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:52", "plant": "개나리", "action": "move", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:52", "plant": "개나리", "action": "prune", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:52", "plant": "개나리", "action": "medicine", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-09 09:52", "plant": "개나리", "action": "water", "disease": "Blight_Spot", "lesion": 0.091}
+{"date": "2026-04-11 21:01", "plant": "마리", "action": "move"}
+{"date": "2026-04-11 21:02", "plant": "마리", "action": "move"}
+{"date": "2026-04-11 21:02", "plant": "마리", "action": "prune"}
+{"date": "2026-04-11 21:02", "plant": "마리", "action": "medicine"}
+{"date": "2026-04-11 21:02", "plant": "마리", "action": "observe"}
+{"date": "2026-04-11 21:02", "plant": "마리", "action": "repot"}
+{"date": "2026-04-11 21:06", "plant": "리아", "action": "move", "disease": "", "lesion": 0}
+{"date": "2026-04-11 21:06", "plant": "리아", "action": "medicine", "disease": "", "lesion": 0}
+{"date": "2026-04-11 21:06", "plant": "리아", "action": "repot", "disease": "", "lesion": 0}
+{"date": "2026-04-11 21:06", "plant": "리아", "action": "clean", "disease": "", "lesion": 0}
+{"date": "2026-04-11 21:06", "plant": "리아", "action": "observe", "disease": "", "lesion": 0}
